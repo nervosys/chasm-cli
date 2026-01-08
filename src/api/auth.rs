@@ -149,6 +149,7 @@ pub struct User {
     pub email: String,
     pub display_name: String,
     #[serde(skip_serializing)]
+    #[allow(dead_code)] // Used during password verification in login flow
     pub password_hash: String,
     pub subscription_tier: SubscriptionTier,
     pub subscription_expires_at: Option<i64>,
@@ -213,11 +214,56 @@ pub struct Claims {
 // Auth State (for middleware)
 // =============================================================================
 
+/// Authenticated user information extracted from JWT token.
+/// Part of the public API for handlers that need user context.
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Fields are part of public API for handler use
 pub struct AuthenticatedUser {
     pub user_id: String,
+    /// User's email address (for logging/audit purposes)
     pub email: String,
+    /// User's subscription tier (for feature gating)
     pub tier: SubscriptionTier,
+}
+
+/// Helper function to check if user has required subscription tier.
+/// Returns Ok(()) if user has sufficient access, or an HttpResponse error.
+#[allow(dead_code)] // Part of public API for tier-gated handlers
+pub fn require_tier(
+    user: &AuthenticatedUser,
+    required_tier: SubscriptionTier,
+) -> Result<(), HttpResponse> {
+    // Empty user_id means not authenticated
+    if user.user_id.is_empty() {
+        return Err(HttpResponse::Unauthorized().json(serde_json::json!({
+            "success": false,
+            "error": "Authentication required"
+        })));
+    }
+
+    // Check tier level (Free < Pro < Enterprise)
+    let user_level = match user.tier {
+        SubscriptionTier::Free => 0,
+        SubscriptionTier::Pro => 1,
+        SubscriptionTier::Enterprise => 2,
+    };
+    let required_level = match required_tier {
+        SubscriptionTier::Free => 0,
+        SubscriptionTier::Pro => 1,
+        SubscriptionTier::Enterprise => 2,
+    };
+
+    if user_level < required_level {
+        return Err(HttpResponse::Forbidden().json(serde_json::json!({
+            "success": false,
+            "error": format!("This feature requires {} subscription or higher", required_tier.as_str()),
+            "required_tier": required_tier.as_str(),
+            "current_tier": user.tier.as_str(),
+            "user_email": user.email
+        })));
+    }
+
+    Ok(())
 }
 
 impl FromRequest for AuthenticatedUser {
@@ -295,6 +341,7 @@ pub struct ChangePasswordRequest {
 pub struct UpgradeSubscriptionRequest {
     pub tier: String,
     /// Payment token from payment provider (Stripe, etc.)
+    #[allow(dead_code)] // Will be used when payment integration is implemented
     pub payment_token: Option<String>,
 }
 
@@ -670,7 +717,7 @@ pub async fn login(
         sub_expires,
         created_at,
         updated_at,
-        last_login,
+        _last_login, // Previous login time (not needed for current login response)
         verified,
         avatar,
     ) = match user_result {

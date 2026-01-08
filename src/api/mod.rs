@@ -11,7 +11,12 @@ mod handlers_swe;
 mod state;
 mod sync;
 
-pub use auth::{configure_auth_routes, AuthenticatedUser, SubscriptionTier};
+// Public API exports for authentication and subscription management
+// These are part of the library's public API even if not used internally
+#[allow(unused_imports)]
+pub use auth::{
+    configure_auth_routes, require_tier, AuthenticatedUser, SubscriptionFeatures, SubscriptionTier,
+};
 pub use state::AppState;
 pub use sync::{configure_sync_routes, create_sync_state};
 
