@@ -1,5 +1,5 @@
 [package]
-name = "chasm"
+name = "chasm-cli"
 version = "1.0.0"
 edition = "2021"
 rust-version = "1.75"
@@ -107,7 +107,7 @@ assert_cmd = "2.0"
 predicates = "3.0"
 
 [[bin]]
-name = "chasm"
+name = "chasm-cli"
 path = "src/main.rs"
 
 [[bin]]
