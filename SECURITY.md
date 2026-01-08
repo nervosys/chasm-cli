@@ -19,7 +19,7 @@ We take security seriously. If you discover a security vulnerability in Chasm, p
 
 Instead, please report security vulnerabilities by emailing:
 
-📧 **security@nervosys.com**
+📧 **security@nervosys.ai**
 
 ### What to Include
 
@@ -95,7 +95,7 @@ Chasm may use the following environment variables. Keep them secure:
 
 ## Security Audits
 
-We welcome security audits of our codebase. If you're interested in conducting a security audit, please contact us at security@nervosys.com.
+We welcome security audits of our codebase. If you're interested in conducting a security audit, please contact us at security@nervosys.ai.
 
 ## Bug Bounty
 
@@ -105,9 +105,11 @@ We currently do not have a formal bug bounty program. However, we appreciate and
 
 For security-related questions or concerns:
 
-- Email: security@nervosys.com
+- Email: security@nervosys.ai
 - PGP Key: Available upon request
 
 ---
 
 Thank you for helping keep Chasm and its users safe! 🛡️
+
+

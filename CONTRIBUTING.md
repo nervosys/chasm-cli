@@ -15,7 +15,7 @@ Thank you for your interest in contributing to Chasm! This document provides gui
 
 ## Code of Conduct
 
-This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [security@nervosys.com](mailto:security@nervosys.com).
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [security@nervosys.ai](mailto:security@nervosys.ai).
 
 ## Getting Started
 
@@ -231,3 +231,5 @@ Signed-off-by: Your Name <your.email@example.com>
 - Read the [documentation](https://docs.rs/chasm) for API details
 
 Thank you for contributing to Chasm! 🎉
+
+

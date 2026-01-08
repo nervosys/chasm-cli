@@ -493,5 +493,7 @@ For security issues, please see our [Security Policy](SECURITY.md).
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://nervosys.com">Nervosys</a>
+  Made with ❤️ by <a href="https://nervosys.ai">Nervosys</a>
 </p>
+
+
