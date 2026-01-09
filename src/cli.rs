@@ -21,6 +21,7 @@ pub enum Commands {
     // List Commands
     // ============================================================================
     /// List workspaces, sessions, or paths
+    #[command(visible_alias = "ls")]
     List {
         #[command(subcommand)]
         command: Option<ListCommands>,
@@ -39,6 +40,7 @@ pub enum Commands {
     // Show Commands
     // ============================================================================
     /// Show workspaces, sessions, or paths
+    #[command(visible_alias = "info")]
     Show {
         #[command(subcommand)]
         command: Option<ShowCommands>,
@@ -84,6 +86,7 @@ pub enum Commands {
     // Move Commands
     // ============================================================================
     /// Move chat sessions between workspaces
+    #[command(visible_alias = "mv")]
     Move {
         #[command(subcommand)]
         command: Option<MoveCommands>,
@@ -138,6 +141,7 @@ pub enum Commands {
     // Register Commands
     // ============================================================================
     /// Add on-disk sessions to VS Code's database index (makes orphaned sessions visible)
+    #[command(visible_alias = "sync")]
     Register {
         #[command(subcommand)]
         command: RegisterCommands,
@@ -156,6 +160,7 @@ pub enum Commands {
     // API Server Commands
     // ============================================================================
     /// Start the HTTP API server for the web frontend
+    #[command(visible_alias = "serve")]
     Api {
         #[command(subcommand)]
         command: ApiCommands,
@@ -185,9 +190,11 @@ pub enum Commands {
 #[derive(Subcommand)]
 pub enum ListCommands {
     /// List all VS Code workspaces
+    #[command(visible_alias = "ws")]
     Workspaces,
 
     /// List all chat sessions
+    #[command(visible_alias = "s")]
     Sessions {
         /// Filter by project path
         #[arg(long)]
@@ -215,12 +222,14 @@ pub enum ListCommands {
 #[derive(Subcommand)]
 pub enum FindCommands {
     /// Search workspaces by name pattern (defaults to current directory name)
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Text pattern to match (case-insensitive, defaults to current directory name)
         pattern: Option<String>,
     },
 
     /// Search sessions by title, content, or ID pattern
+    #[command(visible_alias = "s")]
     Session {
         /// Text pattern to match (case-insensitive, defaults to current directory name)
         pattern: Option<String>,
@@ -268,12 +277,14 @@ pub enum FindCommands {
 #[derive(Subcommand)]
 pub enum ShowCommands {
     /// Show workspace details
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Workspace name or hash
         workspace: String,
     },
 
     /// Show session details
+    #[command(visible_alias = "s")]
     Session {
         /// Session ID or filename
         session_id: String,
@@ -297,6 +308,7 @@ pub enum ShowCommands {
 #[derive(Subcommand)]
 pub enum FetchCommands {
     /// Fetch sessions from workspaces matching a pattern
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Workspace name pattern (case-insensitive)
         workspace_name: String,
@@ -315,6 +327,7 @@ pub enum FetchCommands {
     },
 
     /// Fetch specific sessions by ID
+    #[command(visible_alias = "s")]
     Session {
         /// Session IDs to fetch (space-separated)
         #[arg(required = true, num_args = 1..)]
@@ -355,6 +368,7 @@ pub enum FetchCommands {
 #[derive(Subcommand)]
 pub enum MergeCommands {
     /// Merge sessions from workspaces matching a name pattern
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Workspace name pattern to search for (case-insensitive)
         workspace_name: String,
@@ -377,6 +391,7 @@ pub enum MergeCommands {
     },
 
     /// Merge sessions from multiple workspace name patterns
+    #[command(visible_alias = "wss")]
     Workspaces {
         /// Workspace name patterns to search for (space-separated, case-insensitive)
         #[arg(required = true, num_args = 1..)]
@@ -400,6 +415,7 @@ pub enum MergeCommands {
     },
 
     /// Merge specific sessions by their IDs or filenames
+    #[command(visible_alias = "s")]
     Sessions {
         /// Session IDs or filenames (comma-separated or space-separated)
         #[arg(required = true, num_args = 1..)]
@@ -525,6 +541,7 @@ pub enum MergeCommands {
 #[derive(Subcommand)]
 pub enum ExportCommands {
     /// Export sessions from a workspace by hash
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Destination directory for exported sessions
         destination: String,
@@ -534,6 +551,7 @@ pub enum ExportCommands {
     },
 
     /// Export specific sessions by ID
+    #[command(visible_alias = "s")]
     Sessions {
         /// Destination directory for exported sessions
         destination: String,
@@ -564,6 +582,7 @@ pub enum ExportCommands {
 #[derive(Subcommand)]
 pub enum ImportCommands {
     /// Copy session files from external directory into a workspace
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Source directory containing session JSON files to import
         source: String,
@@ -577,6 +596,7 @@ pub enum ImportCommands {
     },
 
     /// Copy specific session files into a workspace
+    #[command(visible_alias = "s")]
     Sessions {
         /// Session files to import (space-separated paths)
         #[arg(required = true, num_args = 1..)]
@@ -612,6 +632,7 @@ pub enum ImportCommands {
 #[derive(Subcommand)]
 pub enum MoveCommands {
     /// Move all sessions from one workspace to another
+    #[command(visible_alias = "ws")]
     Workspace {
         /// Source workspace hash
         source_hash: String,
@@ -621,6 +642,7 @@ pub enum MoveCommands {
     },
 
     /// Move specific sessions by ID
+    #[command(visible_alias = "s")]
     Sessions {
         /// Session IDs to move (space-separated)
         #[arg(required = true, num_args = 1..)]
@@ -939,6 +961,7 @@ pub enum RegisterCommands {
     },
 
     /// Register specific sessions by ID or title into VS Code's index
+    #[command(visible_alias = "s")]
     Session {
         /// Session IDs or filenames (without .json extension)
         #[arg(required_unless_present = "title")]
