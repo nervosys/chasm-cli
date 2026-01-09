@@ -4,6 +4,7 @@
 
 use crate::error::{CsmError, Result};
 use crate::models::{ChatSession, SessionWithPath, Workspace, WorkspaceJson};
+use crate::storage::parse_session_json;
 use std::path::{Path, PathBuf};
 use urlencoding::decode;
 
@@ -352,7 +353,7 @@ pub fn get_chat_sessions_from_workspace(workspace_dir: &Path) -> Result<Vec<Sess
 
         if path.extension().map(|e| e == "json").unwrap_or(false) {
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     sessions.push(SessionWithPath { path, session });
                 }
             }

@@ -97,6 +97,7 @@ jsonwebtoken = "9.3"
 # Password hashing
 sha2 = "0.10"
 once_cell = "1.21.3"
+regex = "1.12.2"
 
 # Windows DPAPI for cookie decryption
 [target.'cfg(windows)'.dependencies]

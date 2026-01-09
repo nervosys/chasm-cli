@@ -499,6 +499,7 @@ dependencies = [
  "predicates",
  "ratatui",
  "rayon",
+ "regex",
  "reqwest",
  "rusqlite",
  "serde",

@@ -14,8 +14,8 @@ use std::path::PathBuf;
 use crate::error::CsmError;
 use crate::models::ChatSession;
 use crate::storage::{
-    add_session_to_index, get_workspace_storage_db, is_vscode_running, read_chat_session_index,
-    register_all_sessions_from_directory,
+    add_session_to_index, get_workspace_storage_db, is_vscode_running, parse_session_json,
+    read_chat_session_index, register_all_sessions_from_directory,
 };
 use crate::workspace::find_workspace_by_path;
 
@@ -300,7 +300,7 @@ pub fn list_orphaned(project_path: Option<&str>) -> Result<()> {
 
         if path.extension().map(|e| e == "json").unwrap_or(false) {
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     let session_id = session.session_id.clone().unwrap_or_else(|| {
                         path.file_stem()
                             .map(|s| s.to_string_lossy().to_string())
@@ -395,7 +395,7 @@ fn find_session_file(chat_sessions_dir: &PathBuf, session_id: &str) -> Result<Pa
 
             // Also check session_id inside the file
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     if let Some(ref sid) = session.session_id {
                         if sid.starts_with(session_id) || sid == session_id {
                             return Ok(path);
@@ -423,7 +423,7 @@ fn find_sessions_by_titles(
 
         if path.extension().map(|e| e == "json").unwrap_or(false) {
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     let session_title = session.title().to_lowercase();
 
                     for pattern in &title_patterns {

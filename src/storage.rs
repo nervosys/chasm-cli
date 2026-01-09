@@ -5,9 +5,36 @@
 use crate::error::{CsmError, Result};
 use crate::models::{ChatSession, ChatSessionIndex, ChatSessionIndexEntry};
 use crate::workspace::{get_empty_window_sessions_path, get_workspace_storage_path};
+use regex::Regex;
 use rusqlite::Connection;
 use std::path::{Path, PathBuf};
 use sysinfo::System;
+
+/// Sanitize JSON content by replacing lone surrogates with replacement character.
+/// VS Code sometimes writes invalid JSON with lone Unicode surrogates (e.g., \udde0).
+fn sanitize_json_unicode(content: &str) -> String {
+    // Match lone high surrogates (D800-DBFF) not followed by low surrogate (DC00-DFFF)
+    // and lone low surrogates (DC00-DFFF) not preceded by high surrogate
+    let re = Regex::new(r"\\u[dD][89aAbB][0-9a-fA-F]{2}(?!\\u[dD][cCdDeEfF][0-9a-fA-F]{2})|(?<!\\u[dD][89aAbB][0-9a-fA-F]{2})\\u[dD][cCdDeEfF][0-9a-fA-F]{2}")
+        .unwrap();
+    re.replace_all(content, "\\uFFFD").to_string()
+}
+
+/// Try to parse JSON, sanitizing invalid Unicode if needed
+pub fn parse_session_json(content: &str) -> std::result::Result<ChatSession, serde_json::Error> {
+    match serde_json::from_str::<ChatSession>(content) {
+        Ok(session) => Ok(session),
+        Err(e) => {
+            // If parsing fails due to Unicode issue, try sanitizing
+            if e.to_string().contains("surrogate") || e.to_string().contains("escape") {
+                let sanitized = sanitize_json_unicode(content);
+                serde_json::from_str::<ChatSession>(&sanitized)
+            } else {
+                Err(e)
+            }
+        }
+    }
+}
 
 /// Get the path to the workspace storage database
 pub fn get_workspace_storage_db(workspace_id: &str) -> Result<PathBuf> {
@@ -155,7 +182,7 @@ pub fn sync_session_index(
 
         if path.extension().map(|e| e == "json").unwrap_or(false) {
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     let session_id = session.session_id.clone().unwrap_or_else(|| {
                         path.file_stem()
                             .map(|s| s.to_string_lossy().to_string())
@@ -220,7 +247,7 @@ pub fn register_all_sessions_from_directory(
 
         if path.extension().map(|e| e == "json").unwrap_or(false) {
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     let session_id = session.session_id.clone().unwrap_or_else(|| {
                         path.file_stem()
                             .map(|s| s.to_string_lossy().to_string())
@@ -322,7 +349,7 @@ pub fn read_empty_window_sessions() -> Result<Vec<ChatSession>> {
 
         if path.extension().is_some_and(|e| e == "json") {
             if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                if let Ok(session) = parse_session_json(&content) {
                     sessions.push(session);
                 }
             }

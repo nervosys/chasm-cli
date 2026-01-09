@@ -20,6 +20,7 @@ use crate::browser::{get_installed_browsers, scan_browser_auth, BrowserType};
 use crate::database::{ChatDatabase, ShareLinkParser};
 use crate::models::ChatSession;
 use crate::providers::{ProviderRegistry, ProviderType};
+use crate::storage::parse_session_json;
 use crate::workspace::{discover_workspaces, get_chat_sessions_from_workspace};
 
 /// Check if a string is an empty code block marker (just ``` with no content)
@@ -1204,7 +1205,7 @@ pub fn harvest_export(
             ));
 
             for session_json in &sessions {
-                if let Ok(session) = serde_json::from_str::<ChatSession>(session_json) {
+                if let Ok(session) = parse_session_json(session_json) {
                     md_content.push_str(&format!("## {}\n\n", session.title()));
                     md_content.push_str(&format!("Messages: {}\n\n", session.request_count()));
 
@@ -3311,4 +3312,3 @@ fn md5_hash(data: &str) -> u128 {
     }
     hash
 }
-

@@ -4,6 +4,7 @@
 
 use super::{ChatProvider, ProviderType};
 use crate::models::ChatSession;
+use crate::storage::parse_session_json;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -128,7 +129,7 @@ impl ChatProvider for CursorProvider {
 
                     if path.extension().is_some_and(|e| e == "json") {
                         if let Ok(content) = std::fs::read_to_string(&path) {
-                            if let Ok(session) = serde_json::from_str::<ChatSession>(&content) {
+                            if let Ok(session) = parse_session_json(&content) {
                                 sessions.push(session);
                             }
                         }
