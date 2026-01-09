@@ -1,8 +1,8 @@
 <p align="center">
-  <h1 align="center">🗄️ Chasm CLI</h1>
+  <h1 align="center">🗄️ Chat System Manager (Chasm)</h1>
   <p align="center">
-    <strong>Universal Chat Session Manager</strong><br>
-    Harvest, merge, and recover your AI chat history
+    <strong>Universal Chat and Agentic AI System Manager</strong><br>
+    Harvest, merge, and recover your AI chat and agent task histories
   </p>
 </p>
 
@@ -47,14 +47,14 @@ cargo install --path .
 
 Download from [GitHub Releases](https://github.com/nervosys/chasm-cli/releases):
 
-| Platform | Download |
-|----------|----------|
-| Windows x64 | [chasm-v1.0.0-x86_64-pc-windows-msvc.zip](https://github.com/nervosys/chasm-cli/releases/latest) |
-| Windows ARM | [chasm-v1.0.0-aarch64-pc-windows-msvc.zip](https://github.com/nervosys/chasm-cli/releases/latest) |
-| macOS x64 | [chasm-v1.0.0-x86_64-apple-darwin.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest) |
-| macOS ARM | [chasm-v1.0.0-aarch64-apple-darwin.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest) |
-| Linux x64 | [chasm-v1.0.0-x86_64-unknown-linux-gnu.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest) |
-| Linux musl | [chasm-v1.0.0-x86_64-unknown-linux-musl.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest) |
+| Platform    | Download                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------ |
+| Windows x64 | [chasm-v1.0.0-x86_64-pc-windows-msvc.zip](https://github.com/nervosys/chasm-cli/releases/latest)       |
+| Windows ARM | [chasm-v1.0.0-aarch64-pc-windows-msvc.zip](https://github.com/nervosys/chasm-cli/releases/latest)      |
+| macOS x64   | [chasm-v1.0.0-x86_64-apple-darwin.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest)       |
+| macOS ARM   | [chasm-v1.0.0-aarch64-apple-darwin.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest)      |
+| Linux x64   | [chasm-v1.0.0-x86_64-unknown-linux-gnu.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest)  |
+| Linux musl  | [chasm-v1.0.0-x86_64-unknown-linux-musl.tar.gz](https://github.com/nervosys/chasm-cli/releases/latest) |
 
 ## 🚀 Quick Start
 
@@ -143,81 +143,81 @@ chasm export path /backup/dir /path/to/your/project
 
 ### Session Recovery & Fetching
 
-| Command | Description |
-|---------|-------------|
+| Command                           | Description                                                         |
+| --------------------------------- | ------------------------------------------------------------------- |
 | `chasm fetch path <project-path>` | **Recover sessions** - Fetches and registers sessions for a project |
-| `chasm fetch workspace <pattern>` | Fetch sessions from workspaces matching a pattern |
-| `chasm fetch session <id>` | Fetch a specific session by ID |
-| `chasm register <path>` | Register orphaned sessions in VS Code''s database index |
+| `chasm fetch workspace <pattern>` | Fetch sessions from workspaces matching a pattern                   |
+| `chasm fetch session <id>`        | Fetch a specific session by ID                                      |
+| `chasm register <path>`           | Register orphaned sessions in VS Code''s database index             |
 
 ### Listing & Discovery
 
-| Command | Description |
-|---------|-------------|
-| `chasm list workspaces` | List all discovered workspaces |
-| `chasm list sessions` | List all sessions |
-| `chasm list sessions --project-path <path>` | List sessions for a specific project |
-| `chasm detect all <path>` | Auto-detect workspace, providers, and sessions |
-| `chasm detect workspace <path>` | Detect workspace info for a path |
-| `chasm detect providers` | List available LLM providers |
+| Command                                     | Description                                    |
+| ------------------------------------------- | ---------------------------------------------- |
+| `chasm list workspaces`                     | List all discovered workspaces                 |
+| `chasm list sessions`                       | List all sessions                              |
+| `chasm list sessions --project-path <path>` | List sessions for a specific project           |
+| `chasm detect all <path>`                   | Auto-detect workspace, providers, and sessions |
+| `chasm detect workspace <path>`             | Detect workspace info for a path               |
+| `chasm detect providers`                    | List available LLM providers                   |
 
 ### Viewing & Searching
 
-| Command | Description |
-|---------|-------------|
-| `chasm show session <id>` | Display full session content |
-| `chasm find session <pattern>` | Search sessions by text pattern |
-| `chasm find workspace <pattern>` | Search workspaces by name |
+| Command                          | Description                     |
+| -------------------------------- | ------------------------------- |
+| `chasm show session <id>`        | Display full session content    |
+| `chasm find session <pattern>`   | Search sessions by text pattern |
+| `chasm find workspace <pattern>` | Search workspaces by name       |
 
 ### Export & Import
 
-| Command | Description |
-|---------|-------------|
-| `chasm export path <dest> <project-path>` | Export sessions from a project |
-| `chasm export workspace <dest> <hash>` | Export sessions from a workspace |
+| Command                                     | Description                              |
+| ------------------------------------------- | ---------------------------------------- |
+| `chasm export path <dest> <project-path>`   | Export sessions from a project           |
+| `chasm export workspace <dest> <hash>`      | Export sessions from a workspace         |
 | `chasm import path <source> <project-path>` | Import sessions into a project workspace |
 
 ### Merging Sessions
 
-| Command | Description |
-|---------|-------------|
-| `chasm merge path <project-path>` | Merge all sessions for a project into one |
-| `chasm merge workspace <pattern>` | Merge sessions from matching workspaces |
-| `chasm merge sessions <id1> <id2> ...` | Merge specific sessions by ID |
-| `chasm merge all` | Merge all sessions across all providers |
+| Command                                | Description                               |
+| -------------------------------------- | ----------------------------------------- |
+| `chasm merge path <project-path>`      | Merge all sessions for a project into one |
+| `chasm merge workspace <pattern>`      | Merge sessions from matching workspaces   |
+| `chasm merge sessions <id1> <id2> ...` | Merge specific sessions by ID             |
+| `chasm merge all`                      | Merge all sessions across all providers   |
 
 ### Harvesting (Bulk Collection)
 
-| Command | Description |
-|---------|-------------|
-| `chasm harvest scan` | Scan for all available providers and sessions |
-| `chasm harvest run` | Harvest sessions from all providers into database |
-| `chasm harvest run --providers copilot` | Harvest only from specific providers |
-| `chasm harvest status` | Show harvest database status |
-| `chasm harvest search <query>` | Full-text search across all harvested sessions |
+| Command                                 | Description                                       |
+| --------------------------------------- | ------------------------------------------------- |
+| `chasm harvest scan`                    | Scan for all available providers and sessions     |
+| `chasm harvest run`                     | Harvest sessions from all providers into database |
+| `chasm harvest run --providers copilot` | Harvest only from specific providers              |
+| `chasm harvest status`                  | Show harvest database status                      |
+| `chasm harvest search <query>`          | Full-text search across all harvested sessions    |
 
 ### Git Integration
 
-| Command | Description |
-|---------|-------------|
-| `chasm git init` | Initialize git versioning for chat sessions |
-| `chasm git add` | Stage and commit chat sessions |
-| `chasm git status` | Show git status of chat sessions |
-| `chasm git log` | Show history of chat session commits |
-| `chasm git snapshot` | Create a tagged snapshot |
+| Command              | Description                                 |
+| -------------------- | ------------------------------------------- |
+| `chasm git init`     | Initialize git versioning for chat sessions |
+| `chasm git add`      | Stage and commit chat sessions              |
+| `chasm git status`   | Show git status of chat sessions            |
+| `chasm git log`      | Show history of chat session commits        |
+| `chasm git snapshot` | Create a tagged snapshot                    |
 
 ### Provider Management
 
-| Command | Description |
-|---------|-------------|
+| Command               | Description                   |
+| --------------------- | ----------------------------- |
 | `chasm provider list` | List discovered LLM providers |
 
 ### Server & API
 
-| Command | Description |
-|---------|-------------|
-| `chasm api serve` | Start the REST API server |
-| `chasm api serve --port 8787` | Start on specific port |
+| Command                       | Description               |
+| ----------------------------- | ------------------------- |
+| `chasm api serve`             | Start the REST API server |
+| `chasm api serve --port 8787` | Start on specific port    |
 
 
 ## 🤖 Agency - Agentic Coding CLI
@@ -230,15 +230,15 @@ Chasm includes a full **agentic coding toolkit** similar to Claude Code CLI, but
 chasm agency tools
 ```
 
-| Tool | Description |
-|------|-------------|
-| `file_read` | Read file contents |
-| `file_write` | Write or modify files |
-| `terminal` | Execute shell commands |
-| `code_search` | Search codebase for symbols |
-| `web_search` | Search the web for information |
-| `http_request` | Make HTTP requests |
-| `calculator` | Perform calculations |
+| Tool           | Description                    |
+| -------------- | ------------------------------ |
+| `file_read`    | Read file contents             |
+| `file_write`   | Write or modify files          |
+| `terminal`     | Execute shell commands         |
+| `code_search`  | Search codebase for symbols    |
+| `web_search`   | Search the web for information |
+| `http_request` | Make HTTP requests             |
+| `calculator`   | Perform calculations           |
 
 ### Agent Roles
 
@@ -259,14 +259,14 @@ chasm agency list
 chasm agency modes
 ```
 
-| Mode | Description |
-|------|-------------|
-| `single` | Traditional single-agent (like Claude Code) |
-| `sequential` | Agents execute one after another |
-| `parallel` | Multiple agents work simultaneously |
-| `swarm` | Coordinated multi-agent collaboration |
-| `hierarchical` | Lead agent delegates to specialists |
-| `debate` | Agents debate to find best solution |
+| Mode           | Description                                 |
+| -------------- | ------------------------------------------- |
+| `single`       | Traditional single-agent (like Claude Code) |
+| `sequential`   | Agents execute one after another            |
+| `parallel`     | Multiple agents work simultaneously         |
+| `swarm`        | Coordinated multi-agent collaboration       |
+| `hierarchical` | Lead agent delegates to specialists         |
+| `debate`       | Agents debate to find best solution         |
 
 ### Usage Examples
 
@@ -387,13 +387,13 @@ Chasm's normalized format includes:
 
 ### Benefits
 
-| Feature | Vendor Lock-in | With Chasm |
-|---------|----------------|------------|
-| Switch providers | Lose all history | Keep everything |
-| Search old chats | Per-provider only | Search all at once |
-| Backup conversations | Manual exports | Automatic harvesting |
-| Continue sessions | Start fresh | Full context preserved |
-| Compare providers | Impossible | Same task, different models |
+| Feature              | Vendor Lock-in    | With Chasm                  |
+| -------------------- | ----------------- | --------------------------- |
+| Switch providers     | Lose all history  | Keep everything             |
+| Search old chats     | Per-provider only | Search all at once          |
+| Backup conversations | Manual exports    | Automatic harvesting        |
+| Continue sessions    | Start fresh       | Full context preserved      |
+| Compare providers    | Impossible        | Same task, different models |
 
 
 ## 🔌 API Server
@@ -406,16 +406,16 @@ chasm api serve --host 0.0.0.0 --port 8787
 
 ### Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| GET | `/api/workspaces` | List workspaces |
-| GET | `/api/workspaces/:id` | Get workspace details |
-| GET | `/api/sessions` | List sessions |
-| GET | `/api/sessions/:id` | Get session with messages |
-| GET | `/api/sessions/search?q=` | Search sessions |
-| GET | `/api/stats` | Database statistics |
-| GET | `/api/providers` | List supported providers |
+| Method | Endpoint                  | Description               |
+| ------ | ------------------------- | ------------------------- |
+| GET    | `/api/health`             | Health check              |
+| GET    | `/api/workspaces`         | List workspaces           |
+| GET    | `/api/workspaces/:id`     | Get workspace details     |
+| GET    | `/api/sessions`           | List sessions             |
+| GET    | `/api/sessions/:id`       | Get session with messages |
+| GET    | `/api/sessions/search?q=` | Search sessions           |
+| GET    | `/api/stats`              | Database statistics       |
+| GET    | `/api/providers`          | List supported providers  |
 
 ## 🗃️ Supported Providers
 
@@ -445,11 +445,11 @@ chasm api serve --host 0.0.0.0 --port 8787
 
 ## 📁 Database Locations
 
-| Platform | Location |
-|----------|----------|
-| Windows | `%LOCALAPPDATA%\csm\csm.db` |
-| macOS | `~/Library/Application Support/csm/csm.db` |
-| Linux | `~/.local/share/csm/csm.db` |
+| Platform | Location                                   |
+| -------- | ------------------------------------------ |
+| Windows  | `%LOCALAPPDATA%\csm\csm.db`                |
+| macOS    | `~/Library/Application Support/csm/csm.db` |
+| Linux    | `~/.local/share/csm/csm.db`                |
 
 ## 🛠️ Development
 
