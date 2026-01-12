@@ -3,6 +3,9 @@
   <p align="center">
     <strong>Universal Chat and Agentic AI System Manager</strong><br>
     Harvest, merge, and recover your AI chat and agent task histories
+    <br>
+    <br>
+    Bridging the divide between AI providers!
   </p>
 </p>
 

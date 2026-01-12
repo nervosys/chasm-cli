@@ -19,11 +19,21 @@ use crate::storage::{
 };
 use crate::workspace::find_workspace_by_path;
 
+/// Resolve a path option to an absolute PathBuf, handling "." and relative paths
+fn resolve_path(path: Option<&str>) -> PathBuf {
+    match path {
+        Some(p) => {
+            let path = PathBuf::from(p);
+            path.canonicalize().unwrap_or(path)
+        }
+        None => std::env::current_dir().unwrap_or_default(),
+    }
+}
+
+
 /// Register all sessions from a workspace into VS Code's index
 pub fn register_all(project_path: Option<&str>, merge: bool, force: bool) -> Result<()> {
-    let path = project_path
-        .map(PathBuf::from)
-        .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+    let path = resolve_path(project_path);
 
     if merge {
         println!(
@@ -118,9 +128,7 @@ pub fn register_sessions(
     project_path: Option<&str>,
     force: bool,
 ) -> Result<()> {
-    let path = project_path
-        .map(PathBuf::from)
-        .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+    let path = resolve_path(project_path);
 
     // Find the workspace
     let path_str = path.to_string_lossy().to_string();
@@ -259,9 +267,7 @@ pub fn register_sessions(
 
 /// List sessions that exist on disk but are not in VS Code's index
 pub fn list_orphaned(project_path: Option<&str>) -> Result<()> {
-    let path = project_path
-        .map(PathBuf::from)
-        .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+    let path = resolve_path(project_path);
 
     println!(
         "{} Finding orphaned sessions for: {}",

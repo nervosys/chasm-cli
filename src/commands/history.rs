@@ -139,11 +139,17 @@ pub fn history_show(project_path: Option<&str>) -> Result<()> {
 
 /// Fetch chat sessions from other workspaces into current workspace
 pub fn history_fetch(project_path: Option<&str>, force: bool, no_register: bool) -> Result<()> {
-    let project_path = project_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let project_path = match project_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let project_name = Path::new(&project_path)
         .file_name()
@@ -275,11 +281,17 @@ pub fn history_merge(
     force: bool,
     no_backup: bool,
 ) -> Result<()> {
-    let project_path = project_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let project_path = match project_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let project_name = Path::new(&project_path)
         .file_name()
@@ -506,11 +518,17 @@ pub fn merge_by_workspace_name(
     }
 
     // Determine target workspace
-    let target_path = target_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let target_path = match target_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let target_ws = find_workspace_by_path(&target_path)?
         .context("Target workspace not found. Make sure the project is opened in VS Code")?;
@@ -580,11 +598,17 @@ pub fn merge_sessions_by_list(
     }
 
     // Determine target workspace
-    let target_path = target_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let target_path = match target_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let target_ws = find_workspace_by_path(&target_path)?
         .context("Target workspace not found. Make sure the project is opened in VS Code")?;
@@ -877,9 +901,13 @@ pub fn fetch_by_workspace(
     println!("{}", "=".repeat(70));
 
     // Find target workspace
-    let target_dir = target_path
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+    let target_dir = match target_path {
+        Some(p) => {
+            let path = std::path::PathBuf::from(p);
+            path.canonicalize().unwrap_or(path)
+        }
+        None => std::env::current_dir().unwrap_or_default(),
+    };
     let target_normalized = normalize_path(target_dir.to_str().unwrap_or(""));
 
     println!("\n{} Target: {}", "[>]".blue(), target_normalized);
@@ -1002,9 +1030,13 @@ pub fn fetch_sessions(
     }
 
     // Find target workspace
-    let target_dir = target_path
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+    let target_dir = match target_path {
+        Some(p) => {
+            let path = std::path::PathBuf::from(p);
+            path.canonicalize().unwrap_or(path)
+        }
+        None => std::env::current_dir().unwrap_or_default(),
+    };
     let target_normalized = normalize_path(target_dir.to_str().unwrap_or(""));
 
     println!("\n{} Target: {}", "[>]".blue(), target_normalized);
@@ -1178,11 +1210,17 @@ pub fn merge_by_workspace_names(
     }
 
     // Determine target workspace
-    let target_path = target_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let target_path = match target_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let target_ws = find_workspace_by_path(&target_path)?
         .context("Target workspace not found. Make sure the project is opened in VS Code")?;
@@ -1354,11 +1392,17 @@ pub fn merge_from_provider(
     }
 
     // Determine target workspace
-    let target_path = target_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let target_path = match target_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let target_ws = find_workspace_by_path(&target_path)?
         .context("Target workspace not found. Make sure the project is opened in VS Code")?;
@@ -1536,11 +1580,17 @@ pub fn merge_cross_provider(
     }
 
     // Determine target workspace
-    let target_path = target_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let target_path = match target_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let target_ws = find_workspace_by_path(&target_path)?
         .context("Target workspace not found. Make sure the project is opened in VS Code")?;
@@ -1703,11 +1753,17 @@ pub fn merge_all_providers(
     }
 
     // Determine target workspace
-    let target_path = target_path.map(|p| p.to_string()).unwrap_or_else(|| {
-        std::env::current_dir()
+    let target_path = match target_path {
+        Some(p) => {
+            let path = Path::new(p);
+            path.canonicalize()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| p.to_string())
+        }
+        None => std::env::current_dir()
             .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_else(|_| ".".to_string())
-    });
+            .unwrap_or_else(|_| ".".to_string()),
+    };
 
     let target_ws = find_workspace_by_path(&target_path)?
         .context("Target workspace not found. Make sure the project is opened in VS Code")?;
