@@ -1,6 +1,6 @@
 [package]
 name = "chasm-cli"
-version = "1.1.1"
+version = "1.1.2"
 edition = "2021"
 default-run = "chasm"
 rust-version = "1.75"
@@ -47,7 +47,7 @@ uuid = { version = "1.6", features = ["v4"] }
 chrono = { version = "0.4", features = ["serde"] }
 
 # Table formatting for CLI output
-tabled = "0.15"
+tabled = "0.20"
 
 # Colored terminal output
 colored = "2.1"
@@ -63,11 +63,11 @@ async-trait = "0.1"
 sysinfo = "0.30"
 
 # TUI framework
-ratatui = "0.29"
+ratatui = "0.30"
 crossterm = "0.28"
 
 # HTTP client for cloud API providers (using rustls for cross-compilation compatibility)
-reqwest = { version = "0.11", default-features = false, features = [
+reqwest = { version = "0.12", default-features = false, features = [
     "json",
     "blocking",
     "cookies",
