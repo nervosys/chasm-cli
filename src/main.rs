@@ -53,6 +53,9 @@ fn main() -> Result<()> {
                 commands::list_sessions(project_path.as_deref())
             }
             Some(ListCommands::Orphaned { path }) => commands::list_orphaned(path.as_deref()),
+            Some(ListCommands::Providers { with_sessions }) => {
+                commands::detect_providers(with_sessions)
+            }
             None => commands::list_workspaces(), // Default to workspaces
         },
 
