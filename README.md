@@ -500,7 +500,7 @@ Licensed under the Apache License, Version 2.0 ([LICENSE](LICENSE) or http://www
 
 Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## �� Security
+## 🔒 Security
 
 For security issues, please see our [Security Policy](SECURITY.md).
 ### Security Audit Summary (v1.2.0)
