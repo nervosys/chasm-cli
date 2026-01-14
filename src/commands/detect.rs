@@ -499,34 +499,34 @@ pub fn list_models(provider_filter: Option<&str>) -> Result<()> {
                     Ok(models) if !models.is_empty() => {
                         for model in models {
                             rows.push(ModelRow {
-                                provider: format!("{}", provider_name.cyan()),
+                                provider: provider_name.clone(),
                                 model: model.clone(),
-                                status: format!("{}", "available".green()),
+                                status: "available".to_string(),
                             });
                         }
                     }
                     Ok(_) => {
                         // Provider available but no models listed
                         rows.push(ModelRow {
-                            provider: format!("{}", provider_name.cyan()),
-                            model: "(query endpoint for models)".to_string(),
-                            status: format!("{}", "online".green()),
+                            provider: provider_name.clone(),
+                            model: "(query endpoint)".to_string(),
+                            status: "online".to_string(),
                         });
                     }
                     Err(_) => {
                         rows.push(ModelRow {
-                            provider: format!("{}", provider_name.yellow()),
-                            model: "(error fetching models)".to_string(),
-                            status: format!("{}", "error".red()),
+                            provider: provider_name.clone(),
+                            model: "(error)".to_string(),
+                            status: "error".to_string(),
                         });
                     }
                 }
             } else if provider_filter.is_some() {
                 // Only show offline providers if specifically filtered
                 rows.push(ModelRow {
-                    provider: format!("{}", provider_name.dimmed()),
+                    provider: provider_name.clone(),
                     model: "(not running)".to_string(),
-                    status: format!("{}", "offline".dimmed()),
+                    status: "offline".to_string(),
                 });
             }
         }
@@ -540,18 +540,37 @@ pub fn list_models(provider_filter: Option<&str>) -> Result<()> {
         return Ok(());
     }
 
+    let unique_providers: std::collections::HashSet<_> =
+        rows.iter().map(|r| r.provider.clone()).collect();
+    let provider_count = unique_providers.len();
+    let row_count = rows.len();
+
     let table = Table::new(&rows).with(Style::ascii_rounded()).to_string();
-    println!("{}", table);
+
+    // Apply colors to table output (after width calculation)
+    for line in table.lines() {
+        let colored = line
+            .replace("| ollama ", &format!("| {} ", "ollama".cyan()))
+            .replace("| vllm ", &format!("| {} ", "vllm".cyan()))
+            .replace("| foundry ", &format!("| {} ", "foundry".cyan()))
+            .replace("| lmstudio ", &format!("| {} ", "lmstudio".cyan()))
+            .replace("| localai ", &format!("| {} ", "localai".cyan()))
+            .replace("| textgenwebui ", &format!("| {} ", "textgenwebui".cyan()))
+            .replace("| jan ", &format!("| {} ", "jan".cyan()))
+            .replace("| gpt4all ", &format!("| {} ", "gpt4all".cyan()))
+            .replace("| llamafile ", &format!("| {} ", "llamafile".cyan()))
+            .replace("| available ", &format!("| {} ", "available".green()))
+            .replace("| online ", &format!("| {} ", "online".green()))
+            .replace("| error ", &format!("| {} ", "error".red()))
+            .replace("| offline ", &format!("| {} ", "offline".dimmed()));
+        println!("{}", colored);
+    }
+
     println!(
         "\n{} Found {} model(s) from {} provider(s)",
         "[=]".blue(),
-        rows.len().to_string().yellow(),
-        rows.iter()
-            .map(|r| r.provider.clone())
-            .collect::<std::collections::HashSet<_>>()
-            .len()
-            .to_string()
-            .yellow()
+        row_count.to_string().yellow(),
+        provider_count.to_string().yellow()
     );
 
     Ok(())
