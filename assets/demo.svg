@@ -26,99 +26,102 @@
   <circle cx="100" cy="40" r="7" fill="#27c93f"/>
   
   <!-- Title -->
-  <text x="450" y="45" fill="#787c99" font-family="SF Mono, Consolas, monospace" font-size="13" text-anchor="middle">chasm — Bash</text>
+  <text x="450" y="45" fill="#787c99" font-family="SF Mono, Consolas, monospace" font-size="13" text-anchor="middle">chasm — Terminal</text>
   
   <!-- Terminal content -->
-  <g font-family="SF Mono, Consolas, Monaco, monospace" font-size="13">
+  <g font-family="SF Mono, Menlo, Consolas, monospace" font-size="12.5">
     <!-- Prompt and command -->
     <text x="40" y="90" fill="#7aa2f7">❯</text>
     <text x="60" y="90" fill="#c0caf5">chasm list workspaces</text>
     
-    <!-- Table header separator -->
-    <text x="40" y="120" fill="#565f89">┌──────────────────┬─────────────────────────────────────────────────────┬──────────┬───────────┐</text>
-    <text x="40" y="140" fill="#565f89">│</text>
-    <text x="60" y="140" fill="#bb9af7">Hash</text>
-    <text x="200" y="140" fill="#565f89">│</text>
-    <text x="220" y="140" fill="#bb9af7">Project Path</text>
-    <text x="620" y="140" fill="#565f89">│</text>
-    <text x="640" y="140" fill="#bb9af7">Sessions</text>
-    <text x="730" y="140" fill="#565f89">│</text>
-    <text x="750" y="140" fill="#bb9af7">Has Chats</text>
-    <text x="843" y="140" fill="#565f89">│</text>
-    <text x="40" y="160" fill="#565f89">├──────────────────┼─────────────────────────────────────────────────────┼──────────┼───────────┤</text>
+    <!-- Table - using monospace characters for perfect alignment -->
+    <!-- Column positions: 40 (start), 185 (col2), 540 (col3), 640 (col4), 740 (end) -->
+    <text x="40" y="115" fill="#565f89" xml:space="preserve">┌──────────────────┬──────────────────────────────────────────────┬──────────┬───────────┐</text>
+    <text x="40" y="135" fill="#565f89" xml:space="preserve">│ </text>
+    <text x="55" y="135" fill="#bb9af7">Hash</text>
+    <text x="185" y="135" fill="#565f89">│ </text>
+    <text x="200" y="135" fill="#bb9af7">Project Path</text>
+    <text x="540" y="135" fill="#565f89">│ </text>
+    <text x="555" y="135" fill="#bb9af7">Sessions</text>
+    <text x="640" y="135" fill="#565f89">│ </text>
+    <text x="655" y="135" fill="#bb9af7">Has Chats</text>
+    <text x="740" y="135" fill="#565f89">│</text>
+    <text x="40" y="155" fill="#565f89" xml:space="preserve">├──────────────────┼──────────────────────────────────────────────┼──────────┼───────────┤</text>
     
-    <!-- Data rows -->
-    <text x="40" y="180" fill="#565f89">│</text>
-    <text x="60" y="180" fill="#7dcfff">91d41f3d61f1...</text>
-    <text x="200" y="180" fill="#565f89">│</text>
-    <text x="220" y="180" fill="#c0caf5">~/dev/my-awesome-project</text>
-    <text x="620" y="180" fill="#565f89">│</text>
-    <text x="660" y="180" fill="#9ece6a">12</text>
-    <text x="730" y="180" fill="#565f89">│</text>
-    <text x="770" y="180" fill="#9ece6a">Yes</text>
-    <text x="843" y="180" fill="#565f89">│</text>
+    <!-- Row 1 -->
+    <text x="40" y="175" fill="#565f89">│ </text>
+    <text x="55" y="175" fill="#7dcfff">91d41f3d61f1...</text>
+    <text x="185" y="175" fill="#565f89">│ </text>
+    <text x="200" y="175" fill="#c0caf5">~/dev/my-awesome-project</text>
+    <text x="540" y="175" fill="#565f89">│ </text>
+    <text x="580" y="175" fill="#9ece6a">12</text>
+    <text x="640" y="175" fill="#565f89">│ </text>
+    <text x="670" y="175" fill="#9ece6a">Yes</text>
+    <text x="740" y="175" fill="#565f89">│</text>
     
-    <text x="40" y="200" fill="#565f89">│</text>
-    <text x="60" y="200" fill="#7dcfff">a2b3c4d5e6f7...</text>
-    <text x="200" y="200" fill="#565f89">│</text>
-    <text x="220" y="200" fill="#c0caf5">~/dev/rust-web-api</text>
-    <text x="620" y="200" fill="#565f89">│</text>
-    <text x="660" y="200" fill="#9ece6a">8</text>
-    <text x="730" y="200" fill="#565f89">│</text>
-    <text x="770" y="200" fill="#9ece6a">Yes</text>
-    <text x="843" y="200" fill="#565f89">│</text>
+    <!-- Row 2 -->
+    <text x="40" y="195" fill="#565f89">│ </text>
+    <text x="55" y="195" fill="#7dcfff">a2b3c4d5e6f7...</text>
+    <text x="185" y="195" fill="#565f89">│ </text>
+    <text x="200" y="195" fill="#c0caf5">~/dev/rust-web-api</text>
+    <text x="540" y="195" fill="#565f89">│ </text>
+    <text x="585" y="195" fill="#9ece6a">8</text>
+    <text x="640" y="195" fill="#565f89">│ </text>
+    <text x="670" y="195" fill="#9ece6a">Yes</text>
+    <text x="740" y="195" fill="#565f89">│</text>
     
-    <text x="40" y="220" fill="#565f89">│</text>
-    <text x="60" y="220" fill="#7dcfff">c8d9e0f1a2b3...</text>
-    <text x="200" y="220" fill="#565f89">│</text>
-    <text x="220" y="220" fill="#c0caf5">~/dev/react-dashboard</text>
-    <text x="620" y="220" fill="#565f89">│</text>
-    <text x="660" y="220" fill="#9ece6a">5</text>
-    <text x="730" y="220" fill="#565f89">│</text>
-    <text x="770" y="220" fill="#9ece6a">Yes</text>
-    <text x="843" y="220" fill="#565f89">│</text>
+    <!-- Row 3 -->
+    <text x="40" y="215" fill="#565f89">│ </text>
+    <text x="55" y="215" fill="#7dcfff">c8d9e0f1a2b3...</text>
+    <text x="185" y="215" fill="#565f89">│ </text>
+    <text x="200" y="215" fill="#c0caf5">~/dev/react-dashboard</text>
+    <text x="540" y="215" fill="#565f89">│ </text>
+    <text x="585" y="215" fill="#9ece6a">5</text>
+    <text x="640" y="215" fill="#565f89">│ </text>
+    <text x="670" y="215" fill="#9ece6a">Yes</text>
+    <text x="740" y="215" fill="#565f89">│</text>
     
-    <text x="40" y="240" fill="#565f89">└──────────────────┴─────────────────────────────────────────────────────┴──────────┴───────────┘</text>
+    <text x="40" y="235" fill="#565f89" xml:space="preserve">└──────────────────┴──────────────────────────────────────────────┴──────────┴───────────┘</text>
     
     <!-- Second command -->
-    <text x="40" y="280" fill="#7aa2f7">❯</text>
-    <text x="60" y="280" fill="#c0caf5">chasm fetch path ~/dev/my-awesome-project</text>
+    <text x="40" y="275" fill="#7aa2f7">❯</text>
+    <text x="60" y="275" fill="#c0caf5">chasm fetch path ~/dev/my-awesome-project</text>
     
     <!-- Fetch output -->
-    <text x="40" y="310" fill="#7aa2f7">[&lt;]</text>
-    <text x="80" y="310" fill="#c0caf5">Fetching Chat History for:</text>
-    <text x="310" y="310" fill="#9ece6a">my-awesome-project</text>
+    <text x="40" y="305" fill="#7aa2f7">[&lt;]</text>
+    <text x="75" y="305" fill="#c0caf5">Fetching Chat History for:</text>
+    <text x="295" y="305" fill="#9ece6a">my-awesome-project</text>
     
-    <text x="40" y="330" fill="#565f89">══════════════════════════════════════════════════════════════════════════════</text>
+    <text x="40" y="325" fill="#565f89">════════════════════════════════════════════════════════════════════════════════</text>
     
-    <text x="40" y="355" fill="#c0caf5">Found</text>
-    <text x="90" y="355" fill="#ff9e64">3</text>
-    <text x="110" y="355" fill="#c0caf5">historical workspace(s)</text>
+    <text x="40" y="350" fill="#c0caf5">Found</text>
+    <text x="85" y="350" fill="#ff9e64">3</text>
+    <text x="100" y="350" fill="#c0caf5">historical workspace(s)</text>
     
-    <text x="60" y="385" fill="#9ece6a">[OK]</text>
-    <text x="110" y="385" fill="#c0caf5">Fetched: Implementing authentication system...</text>
-    <text x="520" y="385" fill="#565f89">(abc12345-...)</text>
+    <text x="55" y="380" fill="#9ece6a">[OK]</text>
+    <text x="100" y="380" fill="#c0caf5">Fetched: Implementing authentication system...</text>
+    <text x="475" y="380" fill="#565f89">(abc12345-...)</text>
     
-    <text x="60" y="405" fill="#9ece6a">[OK]</text>
-    <text x="110" y="405" fill="#c0caf5">Fetched: Debugging API endpoints...</text>
-    <text x="420" y="405" fill="#565f89">(def67890-...)</text>
+    <text x="55" y="400" fill="#9ece6a">[OK]</text>
+    <text x="100" y="400" fill="#c0caf5">Fetched: Debugging API endpoints...</text>
+    <text x="390" y="400" fill="#565f89">(def67890-...)</text>
     
-    <text x="60" y="425" fill="#9ece6a">[OK]</text>
-    <text x="110" y="425" fill="#c0caf5">Fetched: Setting up CI/CD pipeline...</text>
-    <text x="430" y="425" fill="#565f89">(ghi11223-...)</text>
+    <text x="55" y="420" fill="#9ece6a">[OK]</text>
+    <text x="100" y="420" fill="#c0caf5">Fetched: Setting up CI/CD pipeline...</text>
+    <text x="400" y="420" fill="#565f89">(ghi11223-...)</text>
     
-    <text x="40" y="455" fill="#565f89">══════════════════════════════════════════════════════════════════════════════</text>
+    <text x="40" y="450" fill="#565f89">════════════════════════════════════════════════════════════════════════════════</text>
     
-    <text x="40" y="480" fill="#bb9af7">Fetched:</text>
-    <text x="120" y="480" fill="#ff9e64">3</text>
-    <text x="140" y="480" fill="#c0caf5">sessions</text>
+    <text x="40" y="475" fill="#bb9af7">Fetched:</text>
+    <text x="115" y="475" fill="#ff9e64">3</text>
+    <text x="130" y="475" fill="#c0caf5">sessions</text>
     
-    <text x="40" y="510" fill="#7dcfff">[i]</text>
-    <text x="70" y="510" fill="#c0caf5">Reload VS Code (Ctrl+R) and check Chat history dropdown</text>
+    <text x="40" y="505" fill="#7dcfff">[i]</text>
+    <text x="70" y="505" fill="#c0caf5">Reload VS Code (Ctrl+R) and check Chat history dropdown</text>
     
     <!-- Cursor -->
-    <text x="40" y="545" fill="#7aa2f7">❯</text>
-    <rect x="60" y="532" width="10" height="18" fill="#7aa2f7" opacity="0.7">
+    <text x="40" y="540" fill="#7aa2f7">❯</text>
+    <rect x="60" y="527" width="10" height="16" fill="#7aa2f7" opacity="0.7">
       <animate attributeName="opacity" values="0.7;0;0.7" dur="1.2s" repeatCount="indefinite"/>
     </rect>
   </g>
