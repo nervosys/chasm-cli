@@ -213,6 +213,14 @@ pub enum ListCommands {
         #[arg(long)]
         path: Option<String>,
     },
+
+    /// List available LLM providers and their status
+    #[command(visible_alias = "p")]
+    Providers {
+        /// Show providers with sessions only
+        #[arg(long)]
+        with_sessions: bool,
+    },
 }
 
 // ============================================================================

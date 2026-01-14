@@ -1,6 +1,6 @@
 [package]
 name = "chasm-cli"
-version = "1.2.5"
+version = "1.2.6"
 edition = "2021"
 default-run = "chasm"
 rust-version = "1.75"
@@ -125,6 +125,7 @@ lto = true
 codegen-units = 1
 strip = true
 # Optimize for size
+
 
 
 
