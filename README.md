@@ -503,7 +503,7 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 ## 🔒 Security
 
 For security issues, please see our [Security Policy](SECURITY.md).
-### Security Audit Summary (v1.2.0)
+### Security Audit Summary (v1.2.9)
 
 Chasm underwent a comprehensive security audit in January 2026 against industry frameworks:
 
@@ -520,7 +520,7 @@ Chasm underwent a comprehensive security audit in January 2026 against industry 
 - 🛡️ **Parameterized SQL** queries (no injection vectors)
 - 🔒 **DPAPI/Keychain** integration for credential access
 
-**Dependencies:** 2 transitive warnings from `ratatui` (TUI framework) - compile-time only, no runtime risk.
+**Dependencies:** 2 transitive advisories from `ratatui` TUI framework (`paste` unmaintained, `lru` unsound iterator) - compile-time/TUI only, no runtime security risk.
 
 ## 📞 Support
 
