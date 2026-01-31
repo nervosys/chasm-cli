@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Chasm" width="180" height="180">
+  <img src="https://raw.githubusercontent.com/nervosys/chasm-cli/master/assets/banner.png" alt="Chasm" width="180" height="180">
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 <br>
 
 <p align="center">
-  <img src="assets/demo.svg" alt="Chasm Demo" width="850">
+  <img src="https://raw.githubusercontent.com/nervosys/chasm-cli/master/assets/demo.svg" alt="Chasm Demo" width="850">
 </p>
 
 <br>
