@@ -1,6 +1,6 @@
 [package]
 name = "chasm-cli"
-version = "1.2.9"
+version = "1.3.1"
 edition = "2021"
 default-run = "chasm"
 rust-version = "1.75"
