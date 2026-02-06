@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" width="900" height="580">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" width="900" height="700">
   <defs>
     <linearGradient id="termBg" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:#0a0e14"/>
@@ -14,7 +14,7 @@
   </defs>
 
   <!-- Terminal window -->
-  <rect x="20" y="20" width="860" height="540" rx="12" fill="url(#termBg)" filter="url(#termShadow)"/>
+  <rect x="20" y="20" width="860" height="660" rx="12" fill="url(#termBg)" filter="url(#termShadow)"/>
 
   <!-- Title bar -->
   <rect x="20" y="20" width="860" height="40" rx="12" fill="url(#headerBg)"/>
@@ -28,100 +28,262 @@
   <!-- Title -->
   <text x="450" y="45" fill="#5c6370" font-family="SF Mono, Consolas, monospace" font-size="13" text-anchor="middle">chasm — Terminal</text>
 
-  <!-- Terminal content -->
+  <!-- ==================== SCENE 1: harvest scan ==================== -->
   <g font-family="SF Mono, Menlo, Consolas, monospace" font-size="12.5">
-    <!-- Prompt and command -->
-    <text x="40" y="90" fill="#82aaff">❯</text>
-    <text x="60" y="90" fill="#b3b1ad">chasm list workspaces</text>
+    <g>
+      <animate attributeName="opacity" values="0;1;1;0;0;0;0;0;0" dur="24s" repeatCount="indefinite" keyTimes="0;0.02;0.30;0.33;0.34;0.50;0.67;0.84;1"/>
 
-    <!-- Table - using monospace characters for perfect alignment -->
-    <text x="40" y="115" fill="#5c6370" xml:space="preserve">┌──────────────────┬──────────────────────────────────────────────┬──────────┬───────────┐</text>
-    <text x="40" y="135" fill="#5c6370" xml:space="preserve">│ </text>
-    <text x="55" y="135" fill="#ab9df2">Hash</text>
-    <text x="185" y="135" fill="#5c6370">│ </text>
-    <text x="200" y="135" fill="#ab9df2">Project Path</text>
-    <text x="540" y="135" fill="#5c6370">│ </text>
-    <text x="555" y="135" fill="#ab9df2">Sessions</text>
-    <text x="640" y="135" fill="#5c6370">│ </text>
-    <text x="655" y="135" fill="#ab9df2">Has Chats</text>
-    <text x="740" y="135" fill="#5c6370">│</text>
-    <text x="40" y="155" fill="#5c6370" xml:space="preserve">├──────────────────┼──────────────────────────────────────────────┼──────────┼───────────┤</text>
+      <!-- Command -->
+      <text x="40" y="90" fill="#82aaff">❯</text>
+      <text x="60" y="90" fill="#b3b1ad">chasm harvest scan</text>
 
-    <!-- Row 1 -->
-    <text x="40" y="175" fill="#5c6370">│ </text>
-    <text x="55" y="175" fill="#78dce8">91d41f3d61f1...</text>
-    <text x="185" y="175" fill="#5c6370">│ </text>
-    <text x="200" y="175" fill="#b3b1ad">~/dev/my-awesome-project</text>
-    <text x="540" y="175" fill="#5c6370">│ </text>
-    <text x="580" y="175" fill="#a9dc76">12</text>
-    <text x="640" y="175" fill="#5c6370">│ </text>
-    <text x="670" y="175" fill="#a9dc76">Yes</text>
-    <text x="740" y="175" fill="#5c6370">│</text>
+      <!-- Header -->
+      <text x="40" y="125" fill="#ab9df2" font-weight="bold">[H]</text>
+      <text x="75" y="125" fill="#b3b1ad">Scanning for Providers</text>
+      <text x="40" y="145" fill="#5c6370">════════════════════════════════════════════════════════════════════════</text>
 
-    <!-- Row 2 -->
-    <text x="40" y="195" fill="#5c6370">│ </text>
-    <text x="55" y="195" fill="#78dce8">a2b3c4d5e6f7...</text>
-    <text x="185" y="195" fill="#5c6370">│ </text>
-    <text x="200" y="195" fill="#b3b1ad">~/dev/rust-web-api</text>
-    <text x="540" y="195" fill="#5c6370">│ </text>
-    <text x="585" y="195" fill="#a9dc76">8</text>
-    <text x="640" y="195" fill="#5c6370">│ </text>
-    <text x="670" y="195" fill="#a9dc76">Yes</text>
-    <text x="740" y="195" fill="#5c6370">│</text>
+      <!-- LLM Providers -->
+      <text x="40" y="175" fill="#82aaff" font-weight="bold">[*]</text>
+      <text x="70" y="175" fill="#b3b1ad">LLM Providers:</text>
 
-    <!-- Row 3 -->
-    <text x="40" y="215" fill="#5c6370">│ </text>
-    <text x="55" y="215" fill="#78dce8">c8d9e0f1a2b3...</text>
-    <text x="185" y="215" fill="#5c6370">│ </text>
-    <text x="200" y="215" fill="#b3b1ad">~/dev/react-dashboard</text>
-    <text x="540" y="215" fill="#5c6370">│ </text>
-    <text x="585" y="215" fill="#a9dc76">5</text>
-    <text x="640" y="215" fill="#5c6370">│ </text>
-    <text x="670" y="215" fill="#a9dc76">Yes</text>
-    <text x="740" y="215" fill="#5c6370">│</text>
+      <text x="55" y="200" fill="#a9dc76">[+]</text>
+      <text x="95" y="200" fill="#b3b1ad" font-weight="bold">GitHub Copilot:</text>
+      <text x="250" y="200" fill="#a9dc76">available</text>
+      <text x="340" y="200" fill="#5c6370">(56 sessions across 24 workspaces)</text>
 
-    <text x="40" y="235" fill="#5c6370" xml:space="preserve">└──────────────────┴──────────────────────────────────────────────┴──────────┴───────────┘</text>
+      <text x="55" y="222" fill="#a9dc76">[+]</text>
+      <text x="95" y="222" fill="#b3b1ad" font-weight="bold">Ollama:</text>
+      <text x="170" y="222" fill="#a9dc76">available</text>
+      <text x="260" y="222" fill="#5c6370">(~/.ollama)</text>
 
-    <!-- Second command -->
-    <text x="40" y="275" fill="#82aaff">❯</text>
-    <text x="60" y="275" fill="#b3b1ad">chasm fetch path ~/dev/my-awesome-project</text>
+      <text x="55" y="244" fill="#a9dc76">[+]</text>
+      <text x="95" y="244" fill="#b3b1ad" font-weight="bold">Cursor:</text>
+      <text x="170" y="244" fill="#a9dc76">available</text>
+      <text x="260" y="244" fill="#5c6370">(12 sessions)</text>
 
-    <!-- Fetch output -->
-    <text x="40" y="305" fill="#82aaff">[&lt;]</text>
-    <text x="75" y="305" fill="#b3b1ad">Fetching Chat History for:</text>
-    <text x="295" y="305" fill="#a9dc76">my-awesome-project</text>
+      <text x="55" y="266" fill="#5c6370">[-]</text>
+      <text x="95" y="266" fill="#5c6370">LM Studio:</text>
+      <text x="195" y="266" fill="#5c6370">not found</text>
 
-    <text x="40" y="325" fill="#5c6370">════════════════════════════════════════════════════════════════════════════════</text>
+      <text x="55" y="288" fill="#5c6370">[-]</text>
+      <text x="95" y="288" fill="#5c6370">vLLM:</text>
+      <text x="145" y="288" fill="#5c6370">not found</text>
 
-    <text x="40" y="350" fill="#b3b1ad">Found</text>
-    <text x="85" y="350" fill="#fc9867">3</text>
-    <text x="100" y="350" fill="#b3b1ad">historical workspace(s)</text>
+      <!-- VS Code Workspaces -->
+      <text x="40" y="325" fill="#82aaff" font-weight="bold">[*]</text>
+      <text x="70" y="325" fill="#b3b1ad">VS Code Workspaces:</text>
 
-    <text x="55" y="380" fill="#a9dc76">[OK]</text>
-    <text x="100" y="380" fill="#b3b1ad">Fetched: Implementing authentication system...</text>
-    <text x="475" y="380" fill="#5c6370">(abc12345-...)</text>
+      <text x="55" y="350" fill="#a9dc76">[+]</text>
+      <text x="95" y="350" fill="#fc9867">162</text>
+      <text x="130" y="350" fill="#b3b1ad">workspaces with</text>
+      <text x="270" y="350" fill="#fc9867">267</text>
+      <text x="305" y="350" fill="#b3b1ad">sessions</text>
 
-    <text x="55" y="400" fill="#a9dc76">[OK]</text>
-    <text x="100" y="400" fill="#b3b1ad">Fetched: Debugging API endpoints...</text>
-    <text x="390" y="400" fill="#5c6370">(def67890-...)</text>
+      <!-- Summary -->
+      <text x="40" y="390" fill="#82aaff" font-weight="bold">[*]</text>
+      <text x="70" y="390" fill="#b3b1ad">Summary:</text>
 
-    <text x="55" y="420" fill="#a9dc76">[OK]</text>
-    <text x="100" y="420" fill="#b3b1ad">Fetched: Setting up CI/CD pipeline...</text>
-    <text x="400" y="420" fill="#5c6370">(ghi11223-...)</text>
+      <text x="55" y="415" fill="#fc9867">8</text>
+      <text x="70" y="415" fill="#b3b1ad">local providers available</text>
 
-    <text x="40" y="450" fill="#5c6370">════════════════════════════════════════════════════════════════════════════════</text>
+      <text x="55" y="437" fill="#fc9867">267</text>
+      <text x="90" y="437" fill="#b3b1ad">total sessions to harvest</text>
 
-    <text x="40" y="475" fill="#ab9df2">Fetched:</text>
-    <text x="115" y="475" fill="#fc9867">3</text>
-    <text x="130" y="475" fill="#b3b1ad">sessions</text>
+      <!-- Next prompt -->
+      <text x="40" y="477" fill="#82aaff">❯</text>
+      <rect x="60" y="464" width="10" height="16" fill="#82aaff" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;0;0.7" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
 
-    <text x="40" y="505" fill="#78dce8">[i]</text>
-    <text x="70" y="505" fill="#b3b1ad">Reload VS Code (Ctrl+R) and check Chat history dropdown</text>
+    <!-- ==================== SCENE 2: fetch + list workspaces ==================== -->
+    <g>
+      <animate attributeName="opacity" values="0;0;0;0;1;1;0;0;0" dur="24s" repeatCount="indefinite" keyTimes="0;0.30;0.33;0.36;0.37;0.63;0.66;0.67;1"/>
 
-    <!-- Cursor -->
-    <text x="40" y="540" fill="#82aaff">❯</text>
-    <rect x="60" y="527" width="10" height="16" fill="#82aaff" opacity="0.7">
-      <animate attributeName="opacity" values="0.7;0;0.7" dur="1.2s" repeatCount="indefinite"/>
-    </rect>
+      <!-- Command -->
+      <text x="40" y="90" fill="#82aaff">❯</text>
+      <text x="60" y="90" fill="#b3b1ad">chasm fetch path ~/dev/my-awesome-project</text>
+
+      <!-- Fetch output -->
+      <text x="40" y="120" fill="#82aaff">[&lt;]</text>
+      <text x="75" y="120" fill="#b3b1ad">Fetching Chat History for:</text>
+      <text x="295" y="120" fill="#a9dc76">my-awesome-project</text>
+
+      <text x="40" y="140" fill="#5c6370">════════════════════════════════════════════════════════════════════════</text>
+
+      <text x="40" y="165" fill="#b3b1ad">Found</text>
+      <text x="85" y="165" fill="#fc9867">3</text>
+      <text x="100" y="165" fill="#b3b1ad">historical workspace(s)</text>
+
+      <text x="55" y="192" fill="#a9dc76">[OK]</text>
+      <text x="100" y="192" fill="#b3b1ad">Fetched: Implementing authentication system...</text>
+      <text x="475" y="192" fill="#5c6370">(abc12345-...)</text>
+
+      <text x="55" y="212" fill="#a9dc76">[OK]</text>
+      <text x="100" y="212" fill="#b3b1ad">Fetched: Debugging API endpoints...</text>
+      <text x="390" y="212" fill="#5c6370">(def67890-...)</text>
+
+      <text x="55" y="232" fill="#a9dc76">[OK]</text>
+      <text x="100" y="232" fill="#b3b1ad">Fetched: Setting up CI/CD pipeline...</text>
+      <text x="400" y="232" fill="#5c6370">(ghi11223-...)</text>
+
+      <text x="40" y="257" fill="#5c6370">════════════════════════════════════════════════════════════════════════</text>
+
+      <text x="40" y="280" fill="#ab9df2">Fetched:</text>
+      <text x="115" y="280" fill="#fc9867">3</text>
+      <text x="130" y="280" fill="#b3b1ad">sessions</text>
+
+      <text x="40" y="308" fill="#78dce8">[i]</text>
+      <text x="70" y="308" fill="#b3b1ad">Reload VS Code (Ctrl+R) and check Chat history dropdown</text>
+
+      <!-- Second command: list workspaces -->
+      <text x="40" y="348" fill="#82aaff">❯</text>
+      <text x="60" y="348" fill="#b3b1ad">chasm list workspaces</text>
+
+      <!-- Table -->
+      <text x="40" y="378" fill="#5c6370" xml:space="preserve">┌──────────────────┬──────────────────────────────────────┬──────────┬───────────┐</text>
+      <text x="40" y="396" fill="#5c6370" xml:space="preserve">│ </text>
+      <text x="55" y="396" fill="#ab9df2">Hash</text>
+      <text x="185" y="396" fill="#5c6370">│ </text>
+      <text x="200" y="396" fill="#ab9df2">Project Path</text>
+      <text x="490" y="396" fill="#5c6370">│ </text>
+      <text x="505" y="396" fill="#ab9df2">Sessions</text>
+      <text x="590" y="396" fill="#5c6370">│ </text>
+      <text x="605" y="396" fill="#ab9df2">Has Chats</text>
+      <text x="690" y="396" fill="#5c6370">│</text>
+      <text x="40" y="414" fill="#5c6370" xml:space="preserve">├──────────────────┼──────────────────────────────────────┼──────────┼───────────┤</text>
+
+      <text x="40" y="432" fill="#5c6370">│ </text>
+      <text x="55" y="432" fill="#78dce8">91d41f3d61f1...</text>
+      <text x="185" y="432" fill="#5c6370">│ </text>
+      <text x="200" y="432" fill="#b3b1ad">~/dev/my-awesome-project</text>
+      <text x="490" y="432" fill="#5c6370">│ </text>
+      <text x="535" y="432" fill="#a9dc76">12</text>
+      <text x="590" y="432" fill="#5c6370">│ </text>
+      <text x="625" y="432" fill="#a9dc76">Yes</text>
+      <text x="690" y="432" fill="#5c6370">│</text>
+
+      <text x="40" y="450" fill="#5c6370">│ </text>
+      <text x="55" y="450" fill="#78dce8">a2b3c4d5e6f7...</text>
+      <text x="185" y="450" fill="#5c6370">│ </text>
+      <text x="200" y="450" fill="#b3b1ad">~/dev/rust-web-api</text>
+      <text x="490" y="450" fill="#5c6370">│ </text>
+      <text x="540" y="450" fill="#a9dc76">8</text>
+      <text x="590" y="450" fill="#5c6370">│ </text>
+      <text x="625" y="450" fill="#a9dc76">Yes</text>
+      <text x="690" y="450" fill="#5c6370">│</text>
+
+      <text x="40" y="468" fill="#5c6370">│ </text>
+      <text x="55" y="468" fill="#78dce8">c8d9e0f1a2b3...</text>
+      <text x="185" y="468" fill="#5c6370">│ </text>
+      <text x="200" y="468" fill="#b3b1ad">~/dev/react-dashboard</text>
+      <text x="490" y="468" fill="#5c6370">│ </text>
+      <text x="540" y="468" fill="#a9dc76">5</text>
+      <text x="590" y="468" fill="#5c6370">│ </text>
+      <text x="625" y="468" fill="#a9dc76">Yes</text>
+      <text x="690" y="468" fill="#5c6370">│</text>
+
+      <text x="40" y="486" fill="#5c6370" xml:space="preserve">└──────────────────┴──────────────────────────────────────┴──────────┴───────────┘</text>
+
+      <!-- Next prompt -->
+      <text x="40" y="526" fill="#82aaff">❯</text>
+      <rect x="60" y="513" width="10" height="16" fill="#82aaff" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;0;0.7" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <!-- ==================== SCENE 3: sync + harvest status ==================== -->
+    <g>
+      <animate attributeName="opacity" values="0;0;0;0;0;0;0;1;1" dur="24s" repeatCount="indefinite" keyTimes="0;0.30;0.33;0.50;0.63;0.66;0.69;0.70;1"/>
+
+      <!-- Command -->
+      <text x="40" y="90" fill="#82aaff">❯</text>
+      <text x="60" y="90" fill="#b3b1ad">chasm sync --pull --dry-run</text>
+
+      <!-- Sync output -->
+      <text x="40" y="120" fill="#ffd866">[DRY RUN]</text>
+      <text x="135" y="120" fill="#b3b1ad">Sync Operation</text>
+      <text x="55" y="140" fill="#5c6370">Database:</text>
+      <text x="140" y="140" fill="#78dce8">~/.local/share/csm/chat_sessions.db</text>
+
+      <text x="40" y="172" fill="#82aaff">[←]</text>
+      <text x="75" y="172" fill="#b3b1ad">Pull: Provider Workspaces → Database</text>
+
+      <text x="55" y="200" fill="#a9dc76">[+]</text>
+      <text x="95" y="200" fill="#b3b1ad">Would pull</text>
+      <text x="190" y="200" fill="#5c6370">f6c0245d-efa6-...</text>
+      <text x="340" y="200" fill="#b3b1ad">from</text>
+      <text x="380" y="200" fill="#78dce8">~/dev/my-awesome-project</text>
+
+      <text x="55" y="220" fill="#a9dc76">[+]</text>
+      <text x="95" y="220" fill="#b3b1ad">Would pull</text>
+      <text x="190" y="220" fill="#5c6370">7262dab8-3b6b-...</text>
+      <text x="340" y="220" fill="#b3b1ad">from</text>
+      <text x="380" y="220" fill="#78dce8">~/dev/rust-web-api</text>
+
+      <text x="55" y="240" fill="#a9dc76">[+]</text>
+      <text x="95" y="240" fill="#b3b1ad">Would pull</text>
+      <text x="190" y="240" fill="#5c6370">874a5646-16d3-...</text>
+      <text x="340" y="240" fill="#b3b1ad">from</text>
+      <text x="380" y="240" fill="#78dce8">~/dev/react-dashboard</text>
+
+      <text x="55" y="260" fill="#a9dc76">[+]</text>
+      <text x="95" y="260" fill="#b3b1ad">Would pull</text>
+      <text x="190" y="260" fill="#5c6370">035265f4-8dc8-...</text>
+      <text x="340" y="260" fill="#b3b1ad">from</text>
+      <text x="380" y="260" fill="#78dce8">~/dev/autonomous-sim</text>
+
+      <text x="55" y="280" fill="#5c6370">...</text>
+      <text x="80" y="280" fill="#5c6370">and 51 more sessions</text>
+
+      <!-- Dry run notice -->
+      <text x="40" y="315" fill="#ffd866">[!]</text>
+      <text x="70" y="315" fill="#b3b1ad">Dry run complete. No changes were made.</text>
+
+      <!-- Second command: harvest status -->
+      <text x="40" y="355" fill="#82aaff">❯</text>
+      <text x="60" y="355" fill="#b3b1ad">chasm harvest status</text>
+
+      <text x="40" y="388" fill="#ab9df2" font-weight="bold">[H]</text>
+      <text x="75" y="388" fill="#b3b1ad">Harvest Database Status</text>
+      <text x="40" y="408" fill="#5c6370">════════════════════════════════════════════════════════════════════════</text>
+
+      <text x="40" y="435" fill="#82aaff">[*]</text>
+      <text x="70" y="435" fill="#5c6370">Database:</text>
+      <text x="155" y="435" fill="#78dce8">~/.local/share/csm/chat_sessions.db</text>
+
+      <text x="40" y="457" fill="#82aaff">[*]</text>
+      <text x="70" y="457" fill="#ab9df2">Total Sessions:</text>
+      <text x="205" y="457" fill="#fc9867">56</text>
+
+      <text x="40" y="479" fill="#82aaff">[*]</text>
+      <text x="70" y="479" fill="#ab9df2">Total Messages:</text>
+      <text x="205" y="479" fill="#fc9867">3,847</text>
+
+      <text x="40" y="501" fill="#82aaff">[*]</text>
+      <text x="70" y="501" fill="#5c6370">Last Harvest:</text>
+      <text x="185" y="501" fill="#b3b1ad">2025-07-16 09:45:12</text>
+
+      <text x="40" y="530" fill="#82aaff">[*]</text>
+      <text x="70" y="530" fill="#b3b1ad">Sessions by Provider:</text>
+      <text x="55" y="555" fill="#a9dc76">[+]</text>
+      <text x="95" y="555" fill="#b3b1ad">GitHub Copilot:</text>
+      <text x="245" y="555" fill="#fc9867">48</text>
+      <text x="270" y="555" fill="#b3b1ad">sessions,</text>
+      <text x="340" y="555" fill="#fc9867">3,201</text>
+      <text x="390" y="555" fill="#b3b1ad">messages</text>
+      <text x="55" y="575" fill="#a9dc76">[+]</text>
+      <text x="95" y="575" fill="#b3b1ad">Cursor:</text>
+      <text x="160" y="575" fill="#fc9867">8</text>
+      <text x="180" y="575" fill="#b3b1ad">sessions,</text>
+      <text x="250" y="575" fill="#fc9867">646</text>
+      <text x="285" y="575" fill="#b3b1ad">messages</text>
+
+      <!-- Next prompt -->
+      <text x="40" y="620" fill="#82aaff">❯</text>
+      <rect x="60" y="607" width="10" height="16" fill="#82aaff" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;0;0.7" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
   </g>
 </svg>
