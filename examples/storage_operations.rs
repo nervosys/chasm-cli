@@ -2,8 +2,8 @@
 //!
 //! Run with: cargo run --example storage_operations
 
-use chasm_cli::storage::{is_vscode_running, read_chat_session_index};
-use chasm_cli::workspace::discover_workspaces;
+use chasm::storage::{is_vscode_running, read_chat_session_index};
+use chasm::workspace::discover_workspaces;
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {

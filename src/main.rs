@@ -18,6 +18,7 @@ mod mcp;
 mod models;
 mod providers;
 mod storage;
+mod telemetry;
 mod tui;
 mod workspace;
 
@@ -26,7 +27,8 @@ use clap::Parser;
 use cli::{
     AgencyCommands, ApiCommands, Cli, Commands, DetectCommands, ExportCommands, FetchCommands,
     FindCommands, GitCommands, HarvestCommands, HarvestGitCommands, ImportCommands, ListCommands,
-    MergeCommands, MigrationCommands, MoveCommands, ProviderCommands, RunCommands, ShowCommands,
+    MergeCommands, MigrationCommands, MoveCommands, ProviderCommands,
+    RunCommands, ShowCommands, TelemetryCommands,
 };
 
 /// Get the current directory name as a default pattern
@@ -46,17 +48,16 @@ fn main() -> Result<()> {
         // ====================================================================
         Commands::List { command } => match command {
             Some(ListCommands::Workspaces) => commands::list_workspaces(),
-            Some(ListCommands::Sessions { project_path }) => {
-                commands::list_sessions(project_path.as_deref())
+            Some(ListCommands::Sessions { project_path, size, provider, all_providers }) => {
+                commands::list_sessions(project_path.as_deref(), size, provider.as_deref(), all_providers)
+            }
+            Some(ListCommands::Agents { project_path, size, provider }) => {
+                commands::list_agents_sessions(project_path.as_deref(), size, provider.as_deref())
             }
             Some(ListCommands::Path { project_path }) => {
-                commands::list_sessions(project_path.as_deref())
+                commands::list_sessions(project_path.as_deref(), false, None, false)
             }
             Some(ListCommands::Orphaned { path }) => commands::list_orphaned(path.as_deref()),
-            Some(ListCommands::Providers { with_sessions }) => {
-                commands::detect_providers(with_sessions)
-            }
-            Some(ListCommands::Models { provider }) => commands::list_models(provider.as_deref()),
             None => commands::list_workspaces(), // Default to workspaces
         },
 
@@ -75,6 +76,10 @@ fn main() -> Result<()> {
                 content,
                 after,
                 before,
+                date,
+                all,
+                provider,
+                all_providers,
                 limit,
             }) => {
                 let pattern = pattern.unwrap_or_else(get_current_dir_name);
@@ -85,6 +90,10 @@ fn main() -> Result<()> {
                     content,
                     after.as_deref(),
                     before.as_deref(),
+                    date.as_deref(),
+                    all,
+                    provider.as_deref(),
+                    all_providers,
                     limit,
                 )
             }
@@ -101,6 +110,10 @@ fn main() -> Result<()> {
                     false,
                     None,
                     None,
+                    None,
+                    false,
+                    None, // provider
+                    false, // all_providers
                     50,
                 )
             }
@@ -120,8 +133,15 @@ fn main() -> Result<()> {
                 session_id,
                 project_path,
             }) => commands::show_session(&session_id, project_path.as_deref()),
+            Some(ShowCommands::Agent {
+                session_id,
+                project_path,
+            }) => commands::show_agent_session(&session_id, project_path.as_deref()),
             Some(ShowCommands::Path { project_path }) => {
                 commands::history_show(project_path.as_deref())
+            }
+            Some(ShowCommands::Timeline { project_path, agents, provider, all_providers }) => {
+                commands::show_timeline(project_path.as_deref(), agents, provider.as_deref(), all_providers)
             }
             None => commands::history_show(None), // Default to current directory
         },
@@ -451,6 +471,9 @@ fn main() -> Result<()> {
             Some(DetectCommands::All { path, verbose }) => {
                 commands::detect_all(path.as_deref(), verbose)
             }
+            Some(DetectCommands::Orphaned { path, recover }) => {
+                commands::detect_orphaned(path.as_deref(), recover)
+            }
             None => {
                 // Default to detect all for current directory
                 commands::detect_all(None, false)
@@ -562,6 +585,63 @@ fn main() -> Result<()> {
         },
 
         // ====================================================================
+        // Recover Commands
+        // ====================================================================
+        Commands::Recover { command } => match command {
+            cli::RecoverCommands::Scan {
+                provider,
+                verbose,
+                include_old,
+            } => commands::recover_scan(&provider, verbose, include_old),
+            cli::RecoverCommands::Recording {
+                server,
+                session,
+                output,
+            } => commands::recover_from_recording(&server, session.as_deref(), output.as_deref()),
+            cli::RecoverCommands::Database {
+                backup,
+                session,
+                output,
+                format,
+            } => commands::recover_from_database(&backup, session.as_deref(), output.as_deref(), &format),
+            cli::RecoverCommands::Jsonl {
+                file,
+                output,
+                aggressive,
+            } => commands::recover_jsonl(&file, output.as_deref(), aggressive),
+            cli::RecoverCommands::Orphans {
+                provider,
+                unindexed,
+                verify,
+            } => commands::recover_orphans(&provider, unindexed, verify),
+            cli::RecoverCommands::Repair {
+                path,
+                backup,
+                dry_run,
+            } => commands::recover_repair(&path, backup, dry_run),
+            cli::RecoverCommands::Status { provider, system } => {
+                commands::recover_status(&provider, system)
+            }
+            cli::RecoverCommands::Convert {
+                input,
+                output,
+                format,
+                compat,
+            } => commands::recover_convert(&input, output.as_deref(), format.as_deref(), &compat),
+            cli::RecoverCommands::Extract {
+                path,
+                output,
+                all_formats,
+                include_edits,
+            } => commands::recover_extract(&path, output.as_deref(), all_formats, include_edits),
+            cli::RecoverCommands::Detect {
+                file,
+                verbose,
+                json,
+            } => commands::recover_detect(&file, verbose, json),
+        },
+
+        // ====================================================================
         // Register Commands
         // ====================================================================
         Commands::Register { command } => match command {
@@ -574,6 +654,13 @@ fn main() -> Result<()> {
                 path,
                 force,
             } => commands::register_sessions(&ids, title.as_deref(), path.as_deref(), force),
+            cli::RegisterCommands::Recursive {
+                path,
+                depth,
+                force,
+                dry_run,
+                exclude,
+            } => commands::register_recursive(path.as_deref(), depth, force, dry_run, &exclude),
         },
 
         // ====================================================================
@@ -626,6 +713,74 @@ fn main() -> Result<()> {
             } => commands::create_agent(&name, &role, instruction.as_deref(), model.as_deref()),
             AgencyCommands::Tools => commands::list_tools(),
             AgencyCommands::Templates => commands::list_templates(),
+        },
+
+        // ====================================================================
+        // Telemetry (User Data Collection)
+        // ====================================================================
+        Commands::Telemetry { command } => match command {
+            Some(TelemetryCommands::Info) | None => commands::telemetry_info(),
+            Some(TelemetryCommands::OptIn) => commands::telemetry_opt_in(),
+            Some(TelemetryCommands::OptOut) => commands::telemetry_opt_out(),
+            Some(TelemetryCommands::Reset) => commands::telemetry_reset(),
+            Some(TelemetryCommands::Record {
+                category,
+                event,
+                data,
+                kv,
+                tags,
+                context,
+                verbose,
+            }) => commands::telemetry_record(
+                &category,
+                &event,
+                data.as_deref(),
+                &kv,
+                tags,
+                context.as_deref(),
+                verbose,
+            ),
+            Some(TelemetryCommands::Show {
+                category,
+                event,
+                tag,
+                limit,
+                format,
+                after,
+                before,
+            }) => commands::telemetry_show(
+                category.as_deref(),
+                event.as_deref(),
+                tag.as_deref(),
+                limit,
+                &format,
+                after.as_deref(),
+                before.as_deref(),
+            ),
+            Some(TelemetryCommands::Export {
+                output,
+                format,
+                category,
+                with_metadata,
+            }) => commands::telemetry_export(&output, &format, category.as_deref(), with_metadata),
+            Some(TelemetryCommands::Clear { force, older_than }) => {
+                commands::telemetry_clear(force, older_than)
+            }
+            Some(TelemetryCommands::Config {
+                endpoint,
+                api_key,
+                enable_remote,
+                disable_remote,
+            }) => commands::telemetry_config(
+                endpoint.as_deref(),
+                api_key.as_deref(),
+                enable_remote,
+                disable_remote,
+            ),
+            Some(TelemetryCommands::Sync { limit, clear_after }) => {
+                commands::telemetry_sync(limit, clear_after)
+            }
+            Some(TelemetryCommands::Test) => commands::telemetry_test(),
         },
 
         // ====================================================================

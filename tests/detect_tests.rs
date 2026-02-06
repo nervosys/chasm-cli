@@ -73,7 +73,7 @@ fn create_mock_session(
 // ============================================================================
 
 mod provider_detection_tests {
-    use chasm_cli::providers::{ProviderRegistry, ProviderType};
+    use chasm::providers::{ProviderRegistry, ProviderType};
 
     #[test]
     fn test_provider_registry_creation() {
@@ -221,7 +221,7 @@ mod provider_detection_tests {
 // ============================================================================
 
 mod workspace_detection_tests {
-    use chasm_cli::workspace::{find_workspace_by_path, normalize_path};
+    use chasm::workspace::{find_workspace_by_path, normalize_path};
 
     #[test]
     fn test_normalize_path_removes_trailing_slash() {
@@ -280,7 +280,7 @@ mod workspace_detection_tests {
 // ============================================================================
 
 mod session_detection_tests {
-    use chasm_cli::models::ChatSession;
+    use chasm::models::ChatSession;
 
     #[test]
     fn test_session_title_extraction() {
@@ -359,7 +359,7 @@ mod session_detection_tests {
 // ============================================================================
 
 mod provider_name_parsing_tests {
-    use chasm_cli::providers::ProviderType;
+    use chasm::providers::ProviderType;
 
     fn parse_provider_name(name: &str) -> Option<ProviderType> {
         match name.to_lowercase().as_str() {
@@ -535,7 +535,7 @@ mod detection_format_tests {
 // ============================================================================
 
 mod cross_provider_tests {
-    use chasm_cli::providers::{ProviderRegistry, ProviderType};
+    use chasm::providers::{ProviderRegistry, ProviderType};
 
     #[test]
     fn test_multiple_provider_enumeration() {
@@ -586,7 +586,7 @@ mod cross_provider_tests {
 // ============================================================================
 
 mod session_sorting_tests {
-    use chasm_cli::models::ChatSession;
+    use chasm::models::ChatSession;
 
     fn create_session_with_timestamp(timestamp: i64) -> ChatSession {
         let json = format!(
@@ -700,7 +700,7 @@ mod filter_tests {
 // ============================================================================
 
 mod error_handling_tests {
-    use chasm_cli::workspace::find_workspace_by_path;
+    use chasm::workspace::find_workspace_by_path;
 
     #[test]
     fn test_invalid_path_does_not_panic() {
@@ -731,7 +731,7 @@ mod error_handling_tests {
 // ============================================================================
 
 mod detection_integration_tests {
-    use chasm_cli::providers::{ProviderRegistry, ProviderType};
+    use chasm::providers::{ProviderRegistry, ProviderType};
 
     #[test]
     fn test_full_provider_detection_flow() {

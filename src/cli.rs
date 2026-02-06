@@ -157,6 +157,16 @@ pub enum Commands {
     },
 
     // ============================================================================
+    // Recover Commands
+    // ============================================================================
+    /// Recover lost chat sessions from backups, recording state, or corrupted files
+    #[command(visible_alias = "restore")]
+    Recover {
+        #[command(subcommand)]
+        command: RecoverCommands,
+    },
+
+    // ============================================================================
     // API Server Commands
     // ============================================================================
     /// Start the HTTP API server for the web frontend
@@ -173,6 +183,15 @@ pub enum Commands {
     Agency {
         #[command(subcommand)]
         command: AgencyCommands,
+    },
+
+    // ============================================================================
+    // Telemetry Commands
+    // ============================================================================
+    /// Manage anonymous usage data collection (opt-in by default)
+    Telemetry {
+        #[command(subcommand)]
+        command: Option<TelemetryCommands>,
     },
 
     // ============================================================================
@@ -199,6 +218,34 @@ pub enum ListCommands {
         /// Filter by project path
         #[arg(long)]
         project_path: Option<String>,
+
+        /// Show file sizes
+        #[arg(long, short = 's')]
+        size: bool,
+
+        /// Filter by provider (vscode, cursor, claudecode, opencode, openclaw, antigravity)
+        #[arg(long, short = 'p')]
+        provider: Option<String>,
+
+        /// Include all providers
+        #[arg(long)]
+        all_providers: bool,
+    },
+
+    /// List agent mode sessions (Copilot Edits / chatEditingSessions)
+    #[command(visible_alias = "a")]
+    Agents {
+        /// Filter by project path
+        #[arg(long)]
+        project_path: Option<String>,
+
+        /// Show file sizes
+        #[arg(long, short = 's')]
+        size: bool,
+
+        /// Filter by provider (vscode, cursor, claudecode, opencode, openclaw, antigravity)
+        #[arg(long, short = 'p')]
+        provider: Option<String>,
     },
 
     /// List sessions for a specific project path
@@ -212,22 +259,6 @@ pub enum ListCommands {
         /// Project path (default: current directory)
         #[arg(long)]
         path: Option<String>,
-    },
-
-    /// List available LLM providers and their status
-    #[command(visible_alias = "p")]
-    Providers {
-        /// Show providers with sessions only
-        #[arg(long)]
-        with_sessions: bool,
-    },
-
-    /// List available models from LLM providers
-    #[command(visible_alias = "m")]
-    Models {
-        /// Filter by provider name (e.g., "ollama", "lmstudio")
-        #[arg(long, short)]
-        provider: Option<String>,
     },
 }
 
@@ -270,6 +301,22 @@ pub enum FindCommands {
         #[arg(long)]
         before: Option<String>,
 
+        /// Filter by internal message timestamp date (YYYY-MM-DD)
+        #[arg(long)]
+        date: Option<String>,
+
+        /// Search across all workspaces (not just current project)
+        #[arg(long, short = 'a')]
+        all: bool,
+
+        /// Filter by provider (vscode, cursor, claudecode, opencode, openclaw, antigravity)
+        #[arg(long, short = 'p')]
+        provider: Option<String>,
+
+        /// Search across all providers
+        #[arg(long)]
+        all_providers: bool,
+
         /// Limit number of results
         #[arg(long, short = 'n', default_value = "50")]
         limit: usize,
@@ -310,10 +357,39 @@ pub enum ShowCommands {
         project_path: Option<String>,
     },
 
+    /// Show agent mode session details (Copilot Edits)
+    #[command(visible_alias = "a")]
+    Agent {
+        /// Agent session ID
+        session_id: String,
+
+        /// Project path to search in
+        #[arg(long)]
+        project_path: Option<String>,
+    },
+
     /// Show chat history timeline for a project path
     Path {
         /// Path to the project (default: current directory)
         project_path: Option<String>,
+    },
+
+    /// Show timeline of session activity with gaps visualization
+    Timeline {
+        /// Path to the project (default: current directory)
+        project_path: Option<String>,
+
+        /// Include agent mode sessions
+        #[arg(long, short = 'a')]
+        agents: bool,
+
+        /// Filter by provider (vscode, cursor, claudecode, opencode, openclaw, antigravity)
+        #[arg(long, short = 'p')]
+        provider: Option<String>,
+
+        /// Include all providers (aggregate timeline)
+        #[arg(long)]
+        all_providers: bool,
     },
 }
 
@@ -953,6 +1029,16 @@ pub enum DetectCommands {
         #[arg(long)]
         verbose: bool,
     },
+
+    /// Find all workspace hashes for a project path (including orphaned workspaces with sessions)
+    Orphaned {
+        /// Project path (default: current directory)
+        path: Option<String>,
+
+        /// Automatically recover orphaned sessions by copying to active workspace
+        #[arg(long, short)]
+        recover: bool,
+    },
 }
 
 // ============================================================================
@@ -994,6 +1080,29 @@ pub enum RegisterCommands {
         /// Force registration even if VS Code is running
         #[arg(long, short)]
         force: bool,
+    },
+
+    /// Recursively walk directories to find and register orphaned sessions for all workspaces
+    #[command(visible_alias = "r")]
+    Recursive {
+        /// Root path to start recursive search (default: current directory)
+        path: Option<String>,
+
+        /// Maximum directory depth to recurse (default: unlimited)
+        #[arg(long, short)]
+        depth: Option<usize>,
+
+        /// Force registration even if VS Code is running
+        #[arg(long, short)]
+        force: bool,
+
+        /// Only show what would be registered without making changes
+        #[arg(long)]
+        dry_run: bool,
+
+        /// Skip directories matching these patterns (can be used multiple times)
+        #[arg(long, short = 'x')]
+        exclude: Vec<String>,
     },
 }
 
@@ -1264,6 +1373,165 @@ pub enum HarvestGitCommands {
 }
 
 // ============================================================================
+// Recover Subcommands
+// ============================================================================
+
+#[derive(Subcommand)]
+pub enum RecoverCommands {
+    /// Scan for recoverable sessions from various sources
+    Scan {
+        /// Provider to scan: vscode, cursor, all (default: all)
+        #[arg(long, default_value = "all")]
+        provider: String,
+
+        /// Show detailed information about each session
+        #[arg(short, long)]
+        verbose: bool,
+
+        /// Include sessions older than normal retention period
+        #[arg(long)]
+        include_old: bool,
+    },
+
+    /// Recover sessions from the recording API server
+    Recording {
+        /// Server URL (default: http://localhost:8787)
+        #[arg(long, default_value = "http://localhost:8787")]
+        server: String,
+
+        /// Only recover specific session ID
+        #[arg(long)]
+        session: Option<String>,
+
+        /// Output directory for recovered sessions
+        #[arg(short, long)]
+        output: Option<String>,
+    },
+
+    /// Recover sessions from SQLite database backups
+    Database {
+        /// Path to the database backup file
+        backup: String,
+
+        /// Extract specific session by ID
+        #[arg(long)]
+        session: Option<String>,
+
+        /// Output directory for recovered sessions
+        #[arg(short, long)]
+        output: Option<String>,
+
+        /// Output format: json, jsonl, md (default: json)
+        #[arg(long, default_value = "json")]
+        format: String,
+    },
+
+    /// Recover sessions from incomplete/corrupted JSONL files
+    Jsonl {
+        /// Path to the JSONL file to repair
+        file: String,
+
+        /// Output file for recovered sessions (default: same name with .recovered suffix)
+        #[arg(short, long)]
+        output: Option<String>,
+
+        /// Attempt aggressive recovery (may produce incomplete sessions)
+        #[arg(long)]
+        aggressive: bool,
+    },
+
+    /// List sessions from VS Code's workspaceStorage that may be orphaned
+    Orphans {
+        /// Provider to check: vscode, cursor, all (default: all)
+        #[arg(long, default_value = "all")]
+        provider: String,
+
+        /// Show sessions not in the SQLite state database
+        #[arg(long)]
+        unindexed: bool,
+
+        /// Check if files actually exist on disk
+        #[arg(long)]
+        verify: bool,
+    },
+
+    /// Repair corrupted session files in place
+    Repair {
+        /// Path to the session directory or file
+        path: String,
+
+        /// Create backup before repair
+        #[arg(long, default_value = "true")]
+        backup: bool,
+
+        /// Dry run - show what would be repaired without making changes
+        #[arg(long)]
+        dry_run: bool,
+    },
+
+    /// Show recovery status and recommendations
+    Status {
+        /// Provider to check: vscode, cursor, all (default: all)
+        #[arg(long, default_value = "all")]
+        provider: String,
+
+        /// Check disk space and file system health
+        #[arg(long)]
+        system: bool,
+    },
+
+    /// Convert session files between JSON and JSONL formats
+    Convert {
+        /// Input file to convert (.json or .jsonl)
+        input: String,
+
+        /// Output file (auto-detects format from extension, or uses --format)
+        #[arg(short, long)]
+        output: Option<String>,
+
+        /// Output format: json, jsonl (default: opposite of input)
+        #[arg(long)]
+        format: Option<String>,
+
+        /// VS Code version compatibility: legacy (< 1.109), modern (>= 1.109), both
+        #[arg(long, default_value = "both")]
+        compat: String,
+    },
+
+    /// Extract sessions from a VS Code workspace by project path
+    Extract {
+        /// Project directory path (will find corresponding workspace hash)
+        path: String,
+
+        /// Output directory for extracted sessions
+        #[arg(short, long)]
+        output: Option<String>,
+
+        /// Include both JSON and JSONL formats if available
+        #[arg(long)]
+        all_formats: bool,
+
+        /// Include editing session fragments (agent mode work)
+        #[arg(long)]
+        include_edits: bool,
+    },
+
+    /// Detect and display session format and version information
+    Detect {
+        /// Session file to analyze (.json or .jsonl)
+        file: String,
+
+        /// Show raw format detection details
+        #[arg(long)]
+        verbose: bool,
+
+        /// Output detection result as JSON
+        #[arg(long)]
+        json: bool,
+    },
+}
+
+// ============================================================================
 // API Server Subcommands
 // ============================================================================
 
@@ -1352,4 +1620,160 @@ pub enum AgencyCommands {
 
     /// Show swarm templates
     Templates,
+}
+
+// ============================================================================
+// Telemetry Subcommands
+// ============================================================================
+
+#[derive(Subcommand)]
+pub enum TelemetryCommands {
+    /// Show telemetry status and what data is collected
+    #[command(visible_alias = "status")]
+    Info,
+
+    /// Enable anonymous usage data collection (this is the default)
+    #[command(visible_alias = "enable")]
+    OptIn,
+
+    /// Disable anonymous usage data collection
+    #[command(visible_alias = "disable")]
+    OptOut,
+
+    /// Reset telemetry ID (generates new anonymous identifier)
+    Reset,
+
+    /// Record structured data for later AI analysis
+    #[command(visible_alias = "log")]
+    Record {
+        /// Event category (e.g., 'workflow', 'error', 'performance', 'usage')
+        #[arg(short, long, default_value = "custom")]
+        category: String,
+
+        /// Event name or type
+        #[arg(short, long)]
+        event: String,
+
+        /// JSON data payload (or use --kv for key=value pairs)
+        #[arg(short, long)]
+        data: Option<String>,
+
+        /// Key-value pairs (can be repeated: -k foo=bar -k baz=123)
+        #[arg(short = 'k', long = "kv", value_parser = parse_key_value)]
+        kv: Vec<(String, String)>,
+
+        /// Add tags for filtering (can be repeated: -t important -t session-123)
+        #[arg(short, long)]
+        tags: Vec<String>,
+
+        /// Optional session or context ID to associate with
+        #[arg(long)]
+        context: Option<String>,
+
+        /// Print recorded event details
+        #[arg(short, long)]
+        verbose: bool,
+    },
+
+    /// Show recorded telemetry data
+    #[command(visible_alias = "logs")]
+    Show {
+        /// Filter by category
+        #[arg(short, long)]
+        category: Option<String>,
+
+        /// Filter by event name
+        #[arg(short, long)]
+        event: Option<String>,
+
+        /// Filter by tag
+        #[arg(short, long)]
+        tag: Option<String>,
+
+        /// Maximum number of records to show
+        #[arg(short = 'n', long, default_value = "20")]
+        limit: usize,
+
+        /// Output format: table, json, jsonl
+        #[arg(short, long, default_value = "table")]
+        format: String,
+
+        /// Show records after this date (YYYY-MM-DD)
+        #[arg(long)]
+        after: Option<String>,
+
+        /// Show records before this date (YYYY-MM-DD)
+        #[arg(long)]
+        before: Option<String>,
+    },
+
+    /// Export recorded data for AI analysis
+    Export {
+        /// Output file path
+        output: String,
+
+        /// Export format: json, jsonl, csv
+        #[arg(short, long, default_value = "jsonl")]
+        format: String,
+
+        /// Filter by category
+        #[arg(short, long)]
+        category: Option<String>,
+
+        /// Include installation metadata in export
+        #[arg(long)]
+        with_metadata: bool,
+    },
+
+    /// Clear recorded telemetry data
+    Clear {
+        /// Skip confirmation prompt
+        #[arg(short, long)]
+        force: bool,
+
+        /// Only clear records older than N days
+        #[arg(long)]
+        older_than: Option<u32>,
+    },
+
+    /// Configure remote telemetry endpoint
+    Config {
+        /// Set the remote endpoint URL
+        #[arg(long)]
+        endpoint: Option<String>,
+
+        /// Set the API key for authentication
+        #[arg(long)]
+        api_key: Option<String>,
+
+        /// Enable remote telemetry sending
+        #[arg(long)]
+        enable_remote: bool,
+
+        /// Disable remote telemetry sending
+        #[arg(long)]
+        disable_remote: bool,
+    },
+
+    /// Sync telemetry records to remote server
+    Sync {
+        /// Maximum number of records to sync
+        #[arg(short = 'n', long)]
+        limit: Option<usize>,
+
+        /// Clear local records after successful sync
+        #[arg(long)]
+        clear_after: bool,
+    },
+
+    /// Test connection to remote telemetry server
+    Test,
+}
+
+/// Parse key=value pairs for telemetry record command
+fn parse_key_value(s: &str) -> std::result::Result<(String, String), String> {
+    let pos = s
+        .find('=')
+        .ok_or_else(|| format!("invalid key=value pair: no '=' found in '{s}'"))?;
+    Ok((s[..pos].to_string(), s[pos + 1..].to_string()))
 }

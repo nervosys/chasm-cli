@@ -92,7 +92,7 @@ fn derive_workspace_name(workspace_id: &str) -> String {
     workspace_id
         .replace('\\', "/")
         .split('/')
-        .rfind(|s: &&str| !s.is_empty())
+        .rfind(|s| !s.is_empty())
         .unwrap_or(workspace_id)
         .to_string()
 }

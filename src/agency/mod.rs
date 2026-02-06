@@ -44,6 +44,10 @@ pub mod runtime;
 pub mod session;
 pub mod tools;
 
+// Autonomous agents
+pub mod archival;
+pub mod search_refinement;
+
 // Re-export main types
 pub use agent::{Agent, AgentBuilder, AgentConfig, AgentRole, AgentStatus};
 pub use error::AgencyError;
@@ -78,3 +82,10 @@ pub use remote::{
 pub use runtime::{Runtime, RuntimeConfig};
 pub use session::{Session, SessionManager, SessionState};
 pub use tools::{BuiltinTools, Tool, ToolBuilder, ToolRegistry};
+
+// Autonomous agent exports
+pub use archival::{ArchivalAgent, ArchivalPolicy, ArchivalResult, ArchivalScheduler, ArchivalStats};
+pub use search_refinement::{
+    EnrichedSearchResult, QueryRefinement, RefinementType, SearchAnalytics,
+    SearchContext, SearchRefinementAgent,
+};

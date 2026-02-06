@@ -29,6 +29,7 @@
 #[allow(dead_code)]
 pub mod cloud;
 pub mod config;
+pub mod continuedev;
 pub mod cursor;
 #[allow(dead_code)]
 pub mod discovery;
@@ -74,12 +75,6 @@ pub trait ChatProvider: Send + Sync {
     /// Export a CSM session to this provider's format
     #[allow(dead_code)]
     fn export_session(&self, session: &ChatSession) -> Result<()>;
-
-    /// List available models from this provider
-    fn list_models(&self) -> Result<Vec<String>> {
-        // Default implementation returns empty list
-        Ok(Vec::new())
-    }
 }
 
 /// Registry of available providers

@@ -451,127 +451,243 @@ fn truncate(s: &str, max_len: usize) -> String {
     }
 }
 
-/// List available models from all providers
-pub fn list_models(provider_filter: Option<&str>) -> Result<()> {
-    use tabled::{settings::Style, Table, Tabled};
+/// Detect all workspace hashes for a project path (including orphaned workspaces)
+/// This helps find sessions that exist on disk but are in old/orphaned workspace folders
+pub fn detect_orphaned(path: Option<&str>, recover: bool) -> Result<()> {
+    use crate::models::WorkspaceJson;
+    use crate::workspace::{decode_workspace_folder, get_workspace_storage_path, normalize_path};
 
-    println!("\n{} Listing Available Models", "[M]".blue().bold());
+    let project_path = path.map(|p| p.to_string()).unwrap_or_else(|| {
+        std::env::current_dir()
+            .map(|p| p.to_string_lossy().to_string())
+            .unwrap_or_else(|_| ".".to_string())
+    });
+
+    println!("\n{} Scanning for Orphaned Sessions", "[D]".blue().bold());
     println!("{}", "=".repeat(60));
+    println!("{} Path: {}", "[*]".blue(), project_path.cyan());
 
-    #[derive(Tabled)]
-    struct ModelRow {
-        #[tabled(rename = "Provider")]
-        provider: String,
-        #[tabled(rename = "Model")]
-        model: String,
-        #[tabled(rename = "Status")]
-        status: String,
-    }
+    let storage_path = get_workspace_storage_path()?;
+    let target_path = normalize_path(&project_path);
 
-    let registry = ProviderRegistry::new();
-    let mut rows: Vec<ModelRow> = Vec::new();
+    // Find ALL workspace hashes that match this path
+    let mut all_workspaces: Vec<(String, std::path::PathBuf, usize, std::time::SystemTime)> =
+        Vec::new();
 
-    let all_provider_types = vec![
-        ProviderType::Ollama,
-        ProviderType::Vllm,
-        ProviderType::Foundry,
-        ProviderType::LmStudio,
-        ProviderType::LocalAI,
-        ProviderType::TextGenWebUI,
-        ProviderType::Jan,
-        ProviderType::Gpt4All,
-        ProviderType::Llamafile,
-    ];
+    for entry in std::fs::read_dir(&storage_path)? {
+        let entry = entry?;
+        let workspace_dir = entry.path();
 
-    for provider_type in all_provider_types {
-        let provider_name = format!("{:?}", provider_type).to_lowercase();
-
-        // Filter by provider if specified
-        if let Some(filter) = provider_filter {
-            if !provider_name.contains(&filter.to_lowercase()) {
-                continue;
-            }
+        if !workspace_dir.is_dir() {
+            continue;
         }
 
-        if let Some(provider) = registry.get_provider(provider_type) {
-            if provider.is_available() {
-                match provider.list_models() {
-                    Ok(models) if !models.is_empty() => {
-                        for model in models {
-                            rows.push(ModelRow {
-                                provider: provider_name.clone(),
-                                model: model.clone(),
-                                status: "available".to_string(),
-                            });
-                        }
-                    }
-                    Ok(_) => {
-                        // Provider available but no models listed
-                        rows.push(ModelRow {
-                            provider: provider_name.clone(),
-                            model: "(query endpoint)".to_string(),
-                            status: "online".to_string(),
-                        });
-                    }
-                    Err(_) => {
-                        rows.push(ModelRow {
-                            provider: provider_name.clone(),
-                            model: "(error)".to_string(),
-                            status: "error".to_string(),
-                        });
+        let workspace_json_path = workspace_dir.join("workspace.json");
+        if !workspace_json_path.exists() {
+            continue;
+        }
+
+        if let Ok(content) = std::fs::read_to_string(&workspace_json_path) {
+            if let Ok(ws_json) = serde_json::from_str::<WorkspaceJson>(&content) {
+                if let Some(folder) = &ws_json.folder {
+                    let folder_path = decode_workspace_folder(folder);
+                    if normalize_path(&folder_path) == target_path {
+                        // Count sessions in this workspace
+                        let chat_sessions_dir = workspace_dir.join("chatSessions");
+                        let session_count = if chat_sessions_dir.exists() {
+                            std::fs::read_dir(&chat_sessions_dir)
+                                .map(|entries| {
+                                    entries
+                                        .filter_map(|e| e.ok())
+                                        .filter(|e| {
+                                            e.path()
+                                                .extension()
+                                                .map(|ext| ext == "json")
+                                                .unwrap_or(false)
+                                        })
+                                        .count()
+                                })
+                                .unwrap_or(0)
+                        } else {
+                            0
+                        };
+
+                        // Get last modified time
+                        let last_modified = if chat_sessions_dir.exists() {
+                            std::fs::read_dir(&chat_sessions_dir)
+                                .ok()
+                                .and_then(|entries| {
+                                    entries
+                                        .filter_map(|e| e.ok())
+                                        .filter_map(|e| e.metadata().ok())
+                                        .filter_map(|m| m.modified().ok())
+                                        .max()
+                                })
+                                .unwrap_or(std::time::UNIX_EPOCH)
+                        } else {
+                            std::time::UNIX_EPOCH
+                        };
+
+                        all_workspaces.push((
+                            entry.file_name().to_string_lossy().to_string(),
+                            workspace_dir,
+                            session_count,
+                            last_modified,
+                        ));
                     }
                 }
-            } else if provider_filter.is_some() {
-                // Only show offline providers if specifically filtered
-                rows.push(ModelRow {
-                    provider: provider_name.clone(),
-                    model: "(not running)".to_string(),
-                    status: "offline".to_string(),
-                });
             }
         }
     }
 
-    if rows.is_empty() {
-        println!("{} No models found", "[!]".yellow());
-        println!(
-            "   Start a local LLM provider (Ollama, LM Studio, etc.) to see available models."
-        );
+    if all_workspaces.is_empty() {
+        println!("\n{} No workspaces found for this path", "[X]".red());
         return Ok(());
     }
 
-    let unique_providers: std::collections::HashSet<_> =
-        rows.iter().map(|r| r.provider.clone()).collect();
-    let provider_count = unique_providers.len();
-    let row_count = rows.len();
+    // Sort by last modified (newest first)
+    all_workspaces.sort_by(|a, b| b.3.cmp(&a.3));
 
-    let table = Table::new(&rows).with(Style::ascii_rounded()).to_string();
-
-    // Apply colors to table output (after width calculation)
-    for line in table.lines() {
-        let colored = line
-            .replace("| ollama ", &format!("| {} ", "ollama".cyan()))
-            .replace("| vllm ", &format!("| {} ", "vllm".cyan()))
-            .replace("| foundry ", &format!("| {} ", "foundry".cyan()))
-            .replace("| lmstudio ", &format!("| {} ", "lmstudio".cyan()))
-            .replace("| localai ", &format!("| {} ", "localai".cyan()))
-            .replace("| textgenwebui ", &format!("| {} ", "textgenwebui".cyan()))
-            .replace("| jan ", &format!("| {} ", "jan".cyan()))
-            .replace("| gpt4all ", &format!("| {} ", "gpt4all".cyan()))
-            .replace("| llamafile ", &format!("| {} ", "llamafile".cyan()))
-            .replace("| available ", &format!("| {} ", "available".green()))
-            .replace("| online ", &format!("| {} ", "online".green()))
-            .replace("| error ", &format!("| {} ", "error".red()))
-            .replace("| offline ", &format!("| {} ", "offline".dimmed()));
-        println!("{}", colored);
-    }
+    // The first one (most recently modified) is the "active" workspace
+    let active_dir = all_workspaces[0].1.clone();
 
     println!(
-        "\n{} Found {} model(s) from {} provider(s)",
-        "[=]".blue(),
-        row_count.to_string().yellow(),
-        provider_count.to_string().yellow()
+        "\n{} Found {} workspace(s) for this path:",
+        "[+]".green().bold(),
+        all_workspaces.len()
     );
+
+    let mut total_orphaned_sessions = 0;
+    let mut orphaned_workspaces: Vec<(String, std::path::PathBuf, usize)> = Vec::new();
+
+    for (i, (hash, dir, session_count, _)) in all_workspaces.iter().enumerate() {
+        let is_active = i == 0;
+        let status = if is_active {
+            format!("{}", "(active)".green())
+        } else {
+            format!("{}", "(orphaned)".yellow())
+        };
+
+        let session_str = if *session_count > 0 {
+            format!("{} sessions", session_count.to_string().cyan())
+        } else {
+            "0 sessions".dimmed().to_string()
+        };
+
+        println!(
+            "   {} {}... {} - {}",
+            if is_active {
+                "[*]".green()
+            } else {
+                "[!]".yellow()
+            },
+            &hash[..16.min(hash.len())],
+            status,
+            session_str
+        );
+
+        if !is_active && *session_count > 0 {
+            total_orphaned_sessions += session_count;
+            orphaned_workspaces.push((hash.clone(), dir.clone(), *session_count));
+
+            // Show session details
+            let chat_sessions_dir = dir.join("chatSessions");
+            if let Ok(entries) = std::fs::read_dir(&chat_sessions_dir) {
+                for entry in entries.filter_map(|e| e.ok()).take(3) {
+                    let path = entry.path();
+                    if path.extension().map(|e| e == "json").unwrap_or(false) {
+                        if let Ok(content) = std::fs::read_to_string(&path) {
+                            if let Ok(session) = crate::storage::parse_session_json(&content) {
+                                let size = entry.metadata().map(|m| m.len()).unwrap_or(0);
+                                let size_str = if size > 1_000_000 {
+                                    format!("{:.1}MB", size as f64 / 1_000_000.0)
+                                } else if size > 1000 {
+                                    format!("{:.1}KB", size as f64 / 1000.0)
+                                } else {
+                                    format!("{}B", size)
+                                };
+                                println!(
+                                    "      {} {} ({}, {} msgs)",
+                                    "`".dimmed(),
+                                    truncate(&session.title(), 45),
+                                    size_str.cyan(),
+                                    session.request_count()
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Summary
+    println!();
+    if total_orphaned_sessions > 0 {
+        println!(
+            "{} {} orphaned session(s) found in {} workspace(s)",
+            "[!]".yellow().bold(),
+            total_orphaned_sessions.to_string().yellow(),
+            orphaned_workspaces.len()
+        );
+
+        if recover {
+            // Recover orphaned sessions
+            println!("\n{} Recovering orphaned sessions...", "[*]".blue());
+
+            let active_chat_sessions = active_dir.join("chatSessions");
+            if !active_chat_sessions.exists() {
+                std::fs::create_dir_all(&active_chat_sessions)?;
+            }
+
+            let mut recovered = 0;
+            for (hash, orphan_dir, _) in &orphaned_workspaces {
+                let orphan_sessions = orphan_dir.join("chatSessions");
+                if let Ok(entries) = std::fs::read_dir(&orphan_sessions) {
+                    for entry in entries.filter_map(|e| e.ok()) {
+                        let src = entry.path();
+                        if src.extension().map(|e| e == "json").unwrap_or(false) {
+                            let filename = src.file_name().unwrap();
+                            let dest = active_chat_sessions.join(filename);
+                            if !dest.exists() {
+                                std::fs::copy(&src, &dest)?;
+                                recovered += 1;
+                                println!(
+                                    "   {} Copied: {} (from {}...)",
+                                    "[+]".green(),
+                                    filename.to_string_lossy(),
+                                    &hash[..8]
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            println!(
+                "\n{} Recovered {} session(s)",
+                "[OK]".green().bold(),
+                recovered
+            );
+            println!(
+                "\n{} Run {} to make them visible in VS Code",
+                "[i]".cyan(),
+                "chasm register all --force".cyan()
+            );
+        } else {
+            println!(
+                "\n{} To recover, run: {}",
+                "[->]".cyan(),
+                format!(
+                    "chasm detect orphaned --recover --path \"{}\"",
+                    project_path
+                )
+                .cyan()
+            );
+        }
+    } else {
+        println!("{} No orphaned sessions found", "[OK]".green().bold());
+    }
 
     Ok(())
 }

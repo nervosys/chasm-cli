@@ -85,6 +85,52 @@ pub struct ChatSession {
     pub requests: Vec<ChatRequest>,
 }
 
+impl ChatSession {
+    /// Collect all text content from the session (user messages and responses)
+    pub fn collect_all_text(&self) -> String {
+        self.requests
+            .iter()
+            .flat_map(|req| {
+                let mut texts = Vec::new();
+                if let Some(msg) = &req.message {
+                    if let Some(text) = &msg.text {
+                        texts.push(text.as_str());
+                    }
+                }
+                if let Some(resp) = &req.response {
+                    if let Some(result) = resp.get("result").and_then(|v| v.as_str()) {
+                        texts.push(result);
+                    }
+                }
+                texts
+            })
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    /// Get user message texts
+    pub fn user_messages(&self) -> Vec<&str> {
+        self.requests
+            .iter()
+            .filter_map(|req| req.message.as_ref().and_then(|m| m.text.as_deref()))
+            .collect()
+    }
+
+    /// Get assistant response texts
+    pub fn assistant_responses(&self) -> Vec<String> {
+        self.requests
+            .iter()
+            .filter_map(|req| {
+                req.response.as_ref().and_then(|r| {
+                    r.get("result")
+                        .and_then(|v| v.as_str())
+                        .map(|s| s.to_string())
+                })
+            })
+            .collect()
+    }
+}
+
 fn default_version() -> u32 {
     3
 }

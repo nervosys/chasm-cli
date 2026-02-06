@@ -18,6 +18,9 @@ pub enum ProviderType {
     Copilot,
     /// Cursor IDE chat
     Cursor,
+    /// Continue.dev VS Code extension
+    #[serde(rename = "continuedev")]
+    ContinueDev,
 
     // ========================================================================
     // Local API Providers
@@ -107,6 +110,7 @@ impl ProviderType {
             // Local/File-based
             Self::Copilot => "GitHub Copilot",
             Self::Cursor => "Cursor",
+            Self::ContinueDev => "Continue.dev",
             // Local API
             Self::Ollama => "Ollama",
             Self::Vllm => "vLLM",
@@ -144,6 +148,7 @@ impl ProviderType {
             // Local/File-based (no API endpoint)
             Self::Copilot => None,
             Self::Cursor => None,
+            Self::ContinueDev => None,
             // Local API
             Self::Ollama => Some("http://localhost:11434"),
             Self::Vllm => Some("http://localhost:8000"),
@@ -177,7 +182,7 @@ impl ProviderType {
 
     /// Check if this provider uses local file storage for sessions
     pub fn uses_file_storage(&self) -> bool {
-        matches!(self, Self::Copilot | Self::Cursor)
+        matches!(self, Self::Copilot | Self::Cursor | Self::ContinueDev)
     }
 
     /// Check if this provider is a cloud-based service with conversation history API

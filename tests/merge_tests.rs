@@ -73,7 +73,7 @@ fn create_test_session_file(
 // ============================================================================
 
 mod provider_merge_type_tests {
-    use chasm_cli::providers::ProviderType;
+    use chasm::providers::ProviderType;
 
     #[test]
     fn test_all_provider_types_have_display_names() {
@@ -120,7 +120,7 @@ mod provider_merge_type_tests {
 // ============================================================================
 
 mod session_merge_logic_tests {
-    use chasm_cli::models::{ChatRequest, ChatSession};
+    use chasm::models::{ChatRequest, ChatSession};
 
     fn create_session(id: &str, title: &str, timestamps: &[i64]) -> ChatSession {
         let _requests: Vec<ChatRequest> = timestamps
@@ -265,7 +265,7 @@ mod title_generation_tests {
 // ============================================================================
 
 mod merge_filter_tests {
-    use chasm_cli::models::ChatSession;
+    use chasm::models::ChatSession;
 
     fn create_session_with_title(title: &str) -> ChatSession {
         serde_json::from_str(&format!(
@@ -336,7 +336,7 @@ mod merge_filter_tests {
 // ============================================================================
 
 mod provider_list_tests {
-    use chasm_cli::providers::ProviderType;
+    use chasm::providers::ProviderType;
 
     fn parse_providers(names: &[&str]) -> Vec<Option<ProviderType>> {
         names
@@ -455,7 +455,7 @@ mod session_count_tests {
 // ============================================================================
 
 mod merge_result_tests {
-    use chasm_cli::models::ChatSession;
+    use chasm::models::ChatSession;
 
     #[test]
     fn test_merged_session_has_correct_version() {
@@ -556,7 +556,7 @@ mod merge_error_tests {
 // ============================================================================
 
 mod merge_integration_tests {
-    use chasm_cli::providers::{ProviderRegistry, ProviderType};
+    use chasm::providers::{ProviderRegistry, ProviderType};
 
     #[test]
     fn test_cross_provider_merge_flow() {

@@ -6,7 +6,7 @@
 //! - Export file parsing
 //! - Conversation conversion
 
-use chasm_cli::providers::config::ProviderType;
+use chasm::providers::config::ProviderType;
 
 // ============================================================================
 // Cloud Provider Type Tests
@@ -245,13 +245,13 @@ mod cloud_provider_serialization_tests {
 // ============================================================================
 
 mod cloud_provider_trait_tests {
-    use chasm_cli::providers::cloud::anthropic::AnthropicProvider;
-    use chasm_cli::providers::cloud::chatgpt::ChatGPTProvider;
-    use chasm_cli::providers::cloud::common::CloudProvider;
-    use chasm_cli::providers::cloud::deepseek::DeepSeekProvider;
-    use chasm_cli::providers::cloud::gemini::GeminiProvider;
-    use chasm_cli::providers::cloud::m365copilot::M365CopilotProvider;
-    use chasm_cli::providers::cloud::perplexity::PerplexityProvider;
+    use chasm::providers::cloud::anthropic::AnthropicProvider;
+    use chasm::providers::cloud::chatgpt::ChatGPTProvider;
+    use chasm::providers::cloud::common::CloudProvider;
+    use chasm::providers::cloud::deepseek::DeepSeekProvider;
+    use chasm::providers::cloud::gemini::GeminiProvider;
+    use chasm::providers::cloud::m365copilot::M365CopilotProvider;
+    use chasm::providers::cloud::perplexity::PerplexityProvider;
 
     #[test]
     fn test_m365_copilot_provider_creation() {
@@ -325,7 +325,7 @@ mod cloud_provider_trait_tests {
 // ============================================================================
 
 mod cloud_conversation_tests {
-    use chasm_cli::providers::cloud::common::{CloudConversation, CloudMessage};
+    use chasm::providers::cloud::common::{CloudConversation, CloudMessage};
     use chrono::Utc;
 
     #[test]
@@ -410,7 +410,7 @@ mod cloud_conversation_tests {
 // ============================================================================
 
 mod fetch_options_tests {
-    use chasm_cli::providers::cloud::common::FetchOptions;
+    use chasm::providers::cloud::common::FetchOptions;
     use chrono::Utc;
 
     #[test]
@@ -447,7 +447,7 @@ mod fetch_options_tests {
 // ============================================================================
 
 mod http_client_tests {
-    use chasm_cli::providers::cloud::common::HttpClientConfig;
+    use chasm::providers::cloud::common::HttpClientConfig;
 
     #[test]
     fn test_http_client_config_default() {
@@ -564,9 +564,7 @@ mod provider_registry_cloud_tests {
 // ============================================================================
 
 mod m365_copilot_export_tests {
-    use chasm_cli::providers::cloud::m365copilot::{
-        get_friendly_app_name, parse_m365_copilot_export,
-    };
+    use chasm::providers::cloud::m365copilot::{get_friendly_app_name, parse_m365_copilot_export};
 
     #[test]
     fn test_parse_empty_array() {
@@ -762,13 +760,13 @@ mod m365_copilot_export_tests {
 // ============================================================================
 
 mod extended_cloud_provider_tests {
-    use chasm_cli::providers::cloud::anthropic::AnthropicProvider;
-    use chasm_cli::providers::cloud::chatgpt::ChatGPTProvider;
-    use chasm_cli::providers::cloud::common::CloudProvider;
-    use chasm_cli::providers::cloud::deepseek::DeepSeekProvider;
-    use chasm_cli::providers::cloud::gemini::GeminiProvider;
-    use chasm_cli::providers::cloud::m365copilot::M365CopilotProvider;
-    use chasm_cli::providers::cloud::perplexity::PerplexityProvider;
+    use chasm::providers::cloud::anthropic::AnthropicProvider;
+    use chasm::providers::cloud::chatgpt::ChatGPTProvider;
+    use chasm::providers::cloud::common::CloudProvider;
+    use chasm::providers::cloud::deepseek::DeepSeekProvider;
+    use chasm::providers::cloud::gemini::GeminiProvider;
+    use chasm::providers::cloud::m365copilot::M365CopilotProvider;
+    use chasm::providers::cloud::perplexity::PerplexityProvider;
 
     // ChatGPT Extended Tests
     #[test]
@@ -854,7 +852,7 @@ mod extended_cloud_provider_tests {
 // ============================================================================
 
 mod cloud_conversation_edge_cases {
-    use chasm_cli::providers::cloud::common::{CloudConversation, CloudMessage};
+    use chasm::providers::cloud::common::{CloudConversation, CloudMessage};
     use chrono::Utc;
 
     #[test]
@@ -1035,7 +1033,7 @@ mod cloud_conversation_edge_cases {
 // ============================================================================
 
 mod provider_type_methods_tests {
-    use chasm_cli::providers::config::ProviderType;
+    use chasm::providers::config::ProviderType;
 
     #[test]
     fn test_all_cloud_providers_have_endpoints() {
@@ -1117,7 +1115,7 @@ mod provider_type_methods_tests {
 // ============================================================================
 
 mod cloud_stress_tests {
-    use chasm_cli::providers::cloud::common::{CloudConversation, CloudMessage};
+    use chasm::providers::cloud::common::{CloudConversation, CloudMessage};
     use chrono::Utc;
 
     #[test]

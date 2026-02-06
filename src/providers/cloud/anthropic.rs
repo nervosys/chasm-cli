@@ -54,7 +54,7 @@ impl AnthropicProvider {
     fn ensure_client(&mut self) -> Result<&reqwest::blocking::Client> {
         if self.client.is_none() {
             let config = HttpClientConfig {
-                user_agent: "".to_string(),
+                user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36".to_string(),
                 ..Default::default()
             };
             self.client = Some(build_http_client(&config)?);

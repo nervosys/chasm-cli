@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 Nervosys LLC
+// Copyright (c) 2024-2028 Nervosys LLC
 // SPDX-License-Identifier: Apache-2.0
 //! Chat System Manager (CSM) - Library
 //!
@@ -39,21 +39,31 @@
 // Library modules export public APIs for external use - suppress dead_code warnings
 #![allow(dead_code)]
 #![allow(unused_imports)]
-#![allow(clippy::upper_case_acronyms)] // LLM, VLM, etc. are standard AI terminology
-#![allow(clippy::type_complexity)] // Complex types in auth are necessary for the API
+#![allow(clippy::upper_case_acronyms)]
+#![allow(clippy::type_complexity)]
 
 pub mod agency;
+pub mod analytics;
+pub mod automation;
 pub mod browser;
 pub mod cli;
-pub mod colors;
+pub mod cloud_sync;
 pub mod commands;
 pub mod database;
+pub mod encryption;
 pub mod error;
 pub mod integrations;
+pub mod intelligence;
 pub mod mcp;
 pub mod models;
+pub mod plugins;
 pub mod providers;
+pub mod routing;
+pub mod scaling;
 pub mod storage;
+pub mod sync;
+pub mod teams;
+pub mod telemetry;
 pub mod tui;
 pub mod workspace;
 
@@ -63,7 +73,6 @@ pub use cli::{
     ListCommands, MergeCommands, MigrationCommands, MoveCommands, ProviderCommands, RunCommands,
     ShowCommands,
 };
-pub use colors::{line, separator, Status, StyledText};
 pub use database::{ChatDatabase, ShareLinkInfo, ShareLinkParser, ShareLinkProvider};
 pub use error::CsmError;
 pub use models::{
@@ -82,3 +91,5 @@ pub use workspace::{
     get_chat_sessions_from_workspace, get_workspace_by_hash, get_workspace_by_path,
     get_workspace_storage_path, normalize_path,
 };
+
+

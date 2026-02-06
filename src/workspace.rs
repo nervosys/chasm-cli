@@ -4,7 +4,7 @@
 
 use crate::error::{CsmError, Result};
 use crate::models::{SessionWithPath, Workspace, WorkspaceJson};
-use crate::storage::parse_session_json;
+use crate::storage::{is_session_file_extension, parse_session_file};
 use std::path::{Path, PathBuf};
 use urlencoding::decode;
 
@@ -125,7 +125,7 @@ pub fn discover_workspaces() -> Result<Vec<Workspace>> {
                         .filter(|e| {
                             e.path()
                                 .extension()
-                                .map(|ext| ext == "json")
+                                .map(|ext| is_session_file_extension(ext))
                                 .unwrap_or(false)
                         })
                         .count()
@@ -351,11 +351,13 @@ pub fn get_chat_sessions_from_workspace(workspace_dir: &Path) -> Result<Vec<Sess
         let entry = entry?;
         let path = entry.path();
 
-        if path.extension().map(|e| e == "json").unwrap_or(false) {
-            if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(session) = parse_session_json(&content) {
-                    sessions.push(SessionWithPath { path, session });
-                }
+        if path
+            .extension()
+            .map(|e| is_session_file_extension(e))
+            .unwrap_or(false)
+        {
+            if let Ok(session) = parse_session_file(&path) {
+                sessions.push(SessionWithPath { path, session });
             }
         }
     }

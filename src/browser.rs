@@ -900,6 +900,7 @@ fn decrypt_chromium_cookie(encrypted_value: &[u8], browser: &BrowserType) -> Res
 
     // Try DPAPI decryption (older format)
     unsafe {
+        #[allow(unused_mut)]
         let input = CRYPT_INTEGER_BLOB {
             cbData: encrypted_value.len() as u32,
             pbData: encrypted_value.as_ptr() as *mut u8,
@@ -948,6 +949,7 @@ fn get_chromium_encryption_key(browser: &BrowserType) -> Option<Vec<u8>> {
 
     // Decrypt using DPAPI
     unsafe {
+        #[allow(unused_mut)]
         let input = CRYPT_INTEGER_BLOB {
             cbData: encrypted_key.len() as u32,
             pbData: encrypted_key.as_ptr() as *mut u8,

@@ -8,8 +8,8 @@
 //! - Markdown export/import
 //! - Response text extraction
 
-use chasm_cli::models::{ChatMessage, ChatRequest, ChatSession};
-use chasm_cli::providers::session_format::{
+use chasm::models::{ChatMessage, ChatRequest, ChatSession};
+use chasm::providers::session_format::{
     markdown_to_session, session_to_markdown, GenericMessage, GenericSession,
 };
 

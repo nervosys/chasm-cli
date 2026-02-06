@@ -2,8 +2,8 @@
 //!
 //! Run with: cargo run --example basic_usage
 
-use chasm_cli::models::ChatSession;
-use chasm_cli::workspace::{discover_workspaces, find_workspace_by_path};
+use chasm::models::ChatSession;
+use chasm::workspace::{discover_workspaces, find_workspace_by_path};
 
 fn main() -> anyhow::Result<()> {
     println!("=== CSM Basic Usage Examples ===\n");

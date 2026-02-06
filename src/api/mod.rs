@@ -1,24 +1,44 @@
-// Copyright (c) 2024-2026 Nervosys LLC
+// Copyright (c) 2024-2028 Nervosys LLC
 // SPDX-License-Identifier: Apache-2.0
 //! HTTP API Server for Chat System Manager
 //!
 //! Provides a REST API for the web frontend and mobile app to interact with CSM.
 //! Uses Actix-web for the HTTP server.
 
+#[cfg(feature = "enterprise")]
+mod audit;
 mod auth;
+pub mod caching;
+mod docs;
+mod graphql;
 mod handlers_simple;
 mod handlers_swe;
+#[cfg(feature = "enterprise")]
+mod retention;
+pub mod sdk;
+#[cfg(feature = "enterprise")]
+mod sso;
+mod recording;
 mod state;
 mod sync;
+mod webhooks;
+mod websocket;
 
-// Public API exports for authentication and subscription management
-// These are part of the library's public API even if not used internally
-#[allow(unused_imports)]
-pub use auth::{
-    configure_auth_routes, require_tier, AuthenticatedUser, SubscriptionFeatures, SubscriptionTier,
+pub use recording::{
+    configure_recording_routes, create_recording_state,
 };
+#[cfg(feature = "enterprise")]
+pub use audit::{
+    configure_audit_routes, AuditAction, AuditCategory, AuditEvent, AuditEventBuilder, AuditService,
+};
+pub use auth::configure_auth_routes;
+#[cfg(feature = "enterprise")]
+pub use retention::{configure_retention_routes, RetentionPolicy, RetentionService};
+#[cfg(feature = "enterprise")]
+pub use sso::{configure_sso_routes, SamlIdpConfig, SsoService};
 pub use state::AppState;
 pub use sync::{configure_sync_routes, create_sync_state};
+pub use websocket::{configure_websocket_routes, WebSocketState};
 
 use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpServer};
@@ -201,6 +221,8 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
 
     let state = web::Data::new(AppState::new(db, db_path));
     let sync_state = web::Data::new(create_sync_state());
+    let ws_state = web::Data::new(WebSocketState::new());
+    let recording_state = web::Data::new(create_recording_state());
     let cors_origins = config.cors_origins.clone();
 
     println!("[*] CSM API Server starting...");
@@ -217,12 +239,20 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
     println!("   GET /api/swe/projects   - List SWE projects");
     println!("   POST /api/swe/projects  - Create SWE project");
     println!();
+    println!("[*] Recording endpoints:");
+    println!("   POST /recording/events    - Send recording events");
+    println!("   POST /recording/snapshot  - Store session snapshot");
+    println!("   GET /recording/sessions   - List active sessions");
+    println!("   GET /recording/status     - Recording status");
+    println!("   GET /recording/ws         - WebSocket for real-time recording");
+    println!();
     println!("[*] Sync endpoints:");
     println!("   GET /sync/version       - Get current sync version");
     println!("   GET /sync/delta?from=N  - Get changes since version N");
     println!("   POST /sync/event        - Push a sync event");
     println!("   GET /sync/snapshot      - Get full data snapshot");
     println!("   GET /sync/subscribe     - SSE stream for real-time updates");
+    println!("   GET /ws                 - WebSocket for bidirectional updates");
     println!();
     println!("Press Ctrl+C to stop the server...");
     println!();
@@ -246,11 +276,15 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
         App::new()
             .app_data(state.clone())
             .app_data(sync_state.clone())
+            .app_data(ws_state.clone())
+            .app_data(recording_state.clone())
             .wrap(cors)
             .wrap(middleware::Logger::default())
             .configure(configure_routes)
             .configure(configure_sync_routes)
             .configure(configure_auth_routes)
+            .configure(configure_recording_routes)
+            .configure(|cfg| configure_websocket_routes(cfg, ws_state.clone()))
     });
 
     eprintln!("[DEBUG] Binding to {}:{}...", config.host, config.port);
@@ -262,3 +296,6 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
     eprintln!("[DEBUG] Server stopped.");
     Ok(())
 }
+
+
+

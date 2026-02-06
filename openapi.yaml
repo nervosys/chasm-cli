@@ -1,0 +1,1377 @@
+openapi: 3.0.3
+info:
+  title: Chasm API
+  description: |
+    REST API for Chasm (Chat Session Manager) - a unified platform for harvesting, 
+    managing, and analyzing AI chat sessions across multiple providers and tools.
+
+    ## Authentication
+
+    Currently the API supports local access without authentication. Enterprise features
+    include SSO/SAML authentication and API key-based access.
+
+    ## Rate Limiting
+
+    Rate limiting is optional and configurable per-installation.
+
+    ## WebSocket
+
+    Real-time updates are available via WebSocket at `/ws`.
+  version: 1.3.0
+  contact:
+    name: Nervosys LLC
+    url: https://github.com/nervosys/chasm
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:8787/api/v1
+    description: Local development server
+  - url: https://api.chasm.io/v1
+    description: Production server (when deployed)
+
+tags:
+  - name: Health
+    description: System health checks
+  - name: System
+    description: System management operations
+  - name: Workspaces
+    description: Workspace management
+  - name: Sessions
+    description: Chat session management
+  - name: Providers
+    description: AI provider configuration
+  - name: Agents
+    description: AI agent management
+  - name: Swarms
+    description: Agent swarm orchestration
+  - name: Chat
+    description: Chat completions
+  - name: Search
+    description: Search operations
+  - name: Statistics
+    description: Usage statistics
+  - name: Settings
+    description: Application settings
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Check if the API server is running and healthy
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /system/info:
+    get:
+      tags: [System]
+      summary: Get system information
+      operationId: getSystemInfo
+      responses:
+        "200":
+          description: System information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemInfo"
+
+  /system/vacuum:
+    post:
+      tags: [System]
+      summary: Vacuum database
+      description: Optimize and compact the SQLite database
+      operationId: vacuumDatabase
+      responses:
+        "200":
+          description: Database vacuumed successfully
+
+  /system/cache/clear:
+    post:
+      tags: [System]
+      summary: Clear cache
+      operationId: clearCache
+      responses:
+        "200":
+          description: Cache cleared successfully
+
+  /workspaces:
+    get:
+      tags: [Workspaces]
+      summary: List workspaces
+      operationId: listWorkspaces
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+      responses:
+        "200":
+          description: List of workspaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Workspace"
+    post:
+      tags: [Workspaces]
+      summary: Create workspace
+      operationId: createWorkspace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWorkspace"
+      responses:
+        "201":
+          description: Workspace created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+
+  /workspaces/discover:
+    post:
+      tags: [Workspaces]
+      summary: Discover workspaces
+      description: Scan for VS Code workspaces on the system
+      operationId: discoverWorkspaces
+      responses:
+        "200":
+          description: Discovered workspaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Workspace"
+
+  /workspaces/{id}:
+    get:
+      tags: [Workspaces]
+      summary: Get workspace by ID
+      operationId: getWorkspace
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: Workspace details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Workspaces]
+      summary: Update workspace
+      operationId: updateWorkspace
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWorkspace"
+      responses:
+        "200":
+          description: Workspace updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+    delete:
+      tags: [Workspaces]
+      summary: Delete workspace
+      operationId: deleteWorkspace
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "204":
+          description: Workspace deleted
+
+  /workspaces/{id}/refresh:
+    post:
+      tags: [Workspaces]
+      summary: Refresh workspace
+      description: Re-scan workspace for chat sessions
+      operationId: refreshWorkspace
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: Workspace refreshed
+
+  /sessions:
+    get:
+      tags: [Sessions]
+      summary: List sessions
+      operationId: listSessions
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: workspace_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: provider
+          in: query
+          schema:
+            type: string
+        - name: archived
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionList"
+    post:
+      tags: [Sessions]
+      summary: Create session
+      operationId: createSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSession"
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/merge:
+    post:
+      tags: [Sessions]
+      summary: Merge sessions
+      description: Merge multiple sessions into one
+      operationId: mergeSessions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MergeSessionsRequest"
+      responses:
+        "200":
+          description: Sessions merged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}:
+    get:
+      tags: [Sessions]
+      summary: Get session by ID
+      operationId: getSession
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "200":
+          description: Session details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Sessions]
+      summary: Update session
+      operationId: updateSession
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSession"
+      responses:
+        "200":
+          description: Session updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+    delete:
+      tags: [Sessions]
+      summary: Delete session
+      operationId: deleteSession
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "204":
+          description: Session deleted
+
+  /sessions/{id}/archive:
+    post:
+      tags: [Sessions]
+      summary: Archive session
+      operationId: archiveSession
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "200":
+          description: Session archived
+
+  /sessions/{id}/fork:
+    post:
+      tags: [Sessions]
+      summary: Fork session
+      description: Create a copy of the session for branching
+      operationId: forkSession
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "201":
+          description: Session forked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}/export:
+    get:
+      tags: [Sessions]
+      summary: Export session
+      operationId: exportSession
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, markdown, html, pdf]
+            default: json
+      responses:
+        "200":
+          description: Exported session
+          content:
+            application/json:
+              schema:
+                type: object
+            text/markdown:
+              schema:
+                type: string
+            text/html:
+              schema:
+                type: string
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /sessions/{id}/messages:
+    get:
+      tags: [Sessions]
+      summary: List session messages
+      operationId: listMessages
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      tags: [Sessions]
+      summary: Add message to session
+      operationId: createMessage
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessage"
+      responses:
+        "201":
+          description: Message created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /providers:
+    get:
+      tags: [Providers]
+      summary: List providers
+      operationId: listProviders
+      responses:
+        "200":
+          description: List of configured providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Provider"
+    post:
+      tags: [Providers]
+      summary: Create provider
+      operationId: createProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProvider"
+      responses:
+        "201":
+          description: Provider created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+
+  /providers/{id}:
+    get:
+      tags: [Providers]
+      summary: Get provider by ID
+      operationId: getProvider
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      responses:
+        "200":
+          description: Provider details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+    put:
+      tags: [Providers]
+      summary: Update provider
+      operationId: updateProvider
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProvider"
+      responses:
+        "200":
+          description: Provider updated
+    delete:
+      tags: [Providers]
+      summary: Delete provider
+      operationId: deleteProvider
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      responses:
+        "204":
+          description: Provider deleted
+
+  /providers/{id}/health:
+    get:
+      tags: [Providers]
+      summary: Check provider health
+      operationId: checkProviderHealth
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      responses:
+        "200":
+          description: Provider health status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderHealth"
+
+  /providers/{id}/models:
+    get:
+      tags: [Providers]
+      summary: List provider models
+      operationId: listProviderModels
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      responses:
+        "200":
+          description: Available models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Model"
+
+  /agents:
+    get:
+      tags: [Agents]
+      summary: List agents
+      operationId: listAgents
+      responses:
+        "200":
+          description: List of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Agent"
+    post:
+      tags: [Agents]
+      summary: Create agent
+      operationId: createAgent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAgent"
+      responses:
+        "201":
+          description: Agent created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+
+  /agents/{id}:
+    get:
+      tags: [Agents]
+      summary: Get agent by ID
+      operationId: getAgent
+      parameters:
+        - $ref: "#/components/parameters/agentId"
+      responses:
+        "200":
+          description: Agent details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+    put:
+      tags: [Agents]
+      summary: Update agent
+      operationId: updateAgent
+      parameters:
+        - $ref: "#/components/parameters/agentId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAgent"
+      responses:
+        "200":
+          description: Agent updated
+    delete:
+      tags: [Agents]
+      summary: Delete agent
+      operationId: deleteAgent
+      parameters:
+        - $ref: "#/components/parameters/agentId"
+      responses:
+        "204":
+          description: Agent deleted
+
+  /chat/completions:
+    post:
+      tags: [Chat]
+      summary: Chat completions
+      description: OpenAI-compatible chat completions endpoint
+      operationId: chatCompletions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatCompletionRequest"
+      responses:
+        "200":
+          description: Chat completion response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatCompletionResponse"
+
+  /search:
+    get:
+      tags: [Search]
+      summary: Search all
+      operationId: searchAll
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/limitParam"
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /search/sessions:
+    get:
+      tags: [Search]
+      summary: Search sessions
+      operationId: searchSessions
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/limitParam"
+      responses:
+        "200":
+          description: Session search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+
+  /search/semantic:
+    get:
+      tags: [Search]
+      summary: Semantic search
+      description: AI-powered semantic search across sessions
+      operationId: semanticSearch
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/limitParam"
+      responses:
+        "200":
+          description: Semantic search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SemanticSearchResults"
+
+  /stats/overview:
+    get:
+      tags: [Statistics]
+      summary: Get statistics overview
+      operationId: getStatsOverview
+      responses:
+        "200":
+          description: Statistics overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsOverview"
+
+  /stats/providers:
+    get:
+      tags: [Statistics]
+      summary: Get provider statistics
+      operationId: getProviderStats
+      responses:
+        "200":
+          description: Provider statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProviderStats"
+
+  /stats/timeline:
+    get:
+      tags: [Statistics]
+      summary: Get timeline statistics
+      operationId: getTimelineStats
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: week
+      responses:
+        "200":
+          description: Timeline statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimelineStats"
+
+  /harvest:
+    post:
+      tags: [Sessions]
+      summary: Harvest sessions
+      description: Scan and import sessions from all configured providers
+      operationId: harvestSessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HarvestRequest"
+      responses:
+        "200":
+          description: Harvest results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HarvestResponse"
+
+  /sync:
+    post:
+      tags: [Sessions]
+      summary: Sync sessions
+      description: Synchronize sessions with cloud storage
+      operationId: syncSessions
+      responses:
+        "200":
+          description: Sync results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResponse"
+
+  /settings:
+    get:
+      tags: [Settings]
+      summary: Get settings
+      operationId: getSettings
+      responses:
+        "200":
+          description: Application settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    put:
+      tags: [Settings]
+      summary: Update settings
+      operationId: updateSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Settings"
+      responses:
+        "200":
+          description: Settings updated
+
+components:
+  parameters:
+    workspaceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    sessionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    providerId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    agentId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    limitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    offsetParam:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+      required: [error, message]
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        version:
+          type: string
+        uptime_seconds:
+          type: integer
+
+    SystemInfo:
+      type: object
+      properties:
+        version:
+          type: string
+        database_size_bytes:
+          type: integer
+        session_count:
+          type: integer
+        workspace_count:
+          type: integer
+        provider_count:
+          type: integer
+
+    Workspace:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        path:
+          type: string
+        provider:
+          type: string
+        session_count:
+          type: integer
+        last_harvested:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateWorkspace:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        provider:
+          type: string
+      required: [name, path]
+
+    UpdateWorkspace:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        workspace_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+        model:
+          type: string
+        message_count:
+          type: integer
+        token_count:
+          type: integer
+        archived:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SessionList:
+      type: object
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Session"
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    CreateSession:
+      type: object
+      properties:
+        title:
+          type: string
+        workspace_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateMessage"
+
+    UpdateSession:
+      type: object
+      properties:
+        title:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        archived:
+          type: boolean
+
+    MergeSessionsRequest:
+      type: object
+      properties:
+        session_ids:
+          type: array
+          items:
+            type: string
+          minItems: 2
+        title:
+          type: string
+        strategy:
+          type: string
+          enum: [interleave, concatenate, smart]
+          default: interleave
+      required: [session_ids]
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        session_id:
+          type: string
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+        model:
+          type: string
+        token_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    CreateMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+      required: [role, content]
+
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            [
+              copilot,
+              cursor,
+              chatgpt,
+              claude,
+              ollama,
+              lm-studio,
+              openai,
+              anthropic,
+              custom,
+            ]
+        enabled:
+          type: boolean
+        base_url:
+          type: string
+        models:
+          type: array
+          items:
+            type: string
+
+    CreateProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        base_url:
+          type: string
+        api_key:
+          type: string
+      required: [name, type]
+
+    UpdateProvider:
+      type: object
+      properties:
+        name:
+          type: string
+        enabled:
+          type: boolean
+        base_url:
+          type: string
+        api_key:
+          type: string
+
+    ProviderHealth:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+        latency_ms:
+          type: integer
+        last_checked:
+          type: string
+          format: date-time
+        error:
+          type: string
+
+    Model:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        context_length:
+          type: integer
+        capabilities:
+          type: array
+          items:
+            type: string
+
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        system_prompt:
+          type: string
+        provider_id:
+          type: string
+        model:
+          type: string
+        temperature:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+
+    CreateAgent:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        system_prompt:
+          type: string
+        provider_id:
+          type: string
+        model:
+          type: string
+        temperature:
+          type: number
+          default: 0.7
+      required: [name, provider_id, model]
+
+    UpdateAgent:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        system_prompt:
+          type: string
+        model:
+          type: string
+        temperature:
+          type: number
+
+    ChatCompletionRequest:
+      type: object
+      properties:
+        model:
+          type: string
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: [user, assistant, system]
+              content:
+                type: string
+            required: [role, content]
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        max_tokens:
+          type: integer
+        stream:
+          type: boolean
+          default: false
+      required: [model, messages]
+
+    ChatCompletionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              message:
+                type: object
+                properties:
+                  role:
+                    type: string
+                  content:
+                    type: string
+              finish_reason:
+                type: string
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+
+    SearchResults:
+      type: object
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Session"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        total:
+          type: integer
+
+    SemanticSearchResults:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              session:
+                $ref: "#/components/schemas/Session"
+              relevance:
+                type: number
+              snippet:
+                type: string
+
+    StatsOverview:
+      type: object
+      properties:
+        total_sessions:
+          type: integer
+        total_messages:
+          type: integer
+        total_tokens:
+          type: integer
+        active_providers:
+          type: integer
+        workspaces:
+          type: integer
+        sessions_today:
+          type: integer
+        messages_today:
+          type: integer
+
+    ProviderStats:
+      type: object
+      properties:
+        provider:
+          type: string
+        session_count:
+          type: integer
+        message_count:
+          type: integer
+        token_count:
+          type: integer
+
+    TimelineStats:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        sessions:
+          type: integer
+        messages:
+          type: integer
+        tokens:
+          type: integer
+
+    HarvestRequest:
+      type: object
+      properties:
+        all:
+          type: boolean
+          default: false
+        providers:
+          type: array
+          items:
+            type: string
+        workspace_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    HarvestResponse:
+      type: object
+      properties:
+        sessions_count:
+          type: integer
+        messages_count:
+          type: integer
+        providers_scanned:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+    SyncResponse:
+      type: object
+      properties:
+        uploaded:
+          type: integer
+        downloaded:
+          type: integer
+        conflicts:
+          type: integer
+        last_sync:
+          type: string
+          format: date-time
+
+    Settings:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, system]
+        auto_harvest:
+          type: boolean
+        harvest_interval_minutes:
+          type: integer
+        sync_enabled:
+          type: boolean
+        sync_provider:
+          type: string
+          enum: [local, s3, azure, gcs, webdav]
+        encryption_enabled:
+          type: boolean
+        telemetry_enabled:
+          type: boolean

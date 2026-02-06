@@ -1,14 +1,13 @@
 [package]
 name = "chasm-cli"
-version = "1.3.1"
+version = "1.3.2"
 edition = "2021"
-default-run = "chasm"
 rust-version = "1.75"
 description = "Universal chat session manager - harvest, merge, and analyze AI chat history from VS Code, Cursor, and other editors"
-authors = ["Nervosys LLC <hello@nervosys.com>"]
+authors = ["Nervosys LLC <hello@nervosys.ai>"]
 license = "Apache-2.0"
-repository = "https://github.com/nervosys/chasm-cli"
-homepage = "https://github.com/nervosys/chasm-cli"
+repository = "https://github.com/nervosys/chasm"
+homepage = "https://github.com/nervosys/chasm"
 documentation = "https://docs.rs/chasm-cli"
 readme = "README.md"
 keywords = ["chat", "ai", "copilot", "session", "history"]
@@ -28,6 +27,7 @@ rayon = "1.10"
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_yaml = "0.9"
 
 # SQLite for VS Code state.vscdb
 rusqlite = { version = "0.30", features = ["bundled"] }
@@ -37,20 +37,24 @@ walkdir = "2.4"
 dirs = "5.0"
 glob = "0.3"
 
+# Lazy static initialization
+once_cell = "1.19"
+
 # URL encoding/decoding
 urlencoding = "2.1"
 
 # UUID generation
-uuid = { version = "1.6", features = ["v4"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
 
 # Date/time handling
 chrono = { version = "0.4", features = ["serde"] }
 
 # Table formatting for CLI output
-tabled = "0.20"
+tabled = "0.15"
 
 # Colored terminal output
 colored = "2.1"
+log = "0.4"
 
 # Error handling
 anyhow = "1.0"
@@ -79,7 +83,13 @@ actix-web = { version = "4", default-features = false, features = [
     "rustls-0_23",
 ] }
 actix-http = { version = "3", features = ["ws"] }
+actix-ws = "0.3"
 actix-cors = "0.7"
+actix-files = "0.6"
+
+# GraphQL
+async-graphql = { version = "7", features = ["chrono"] }
+async-graphql-actix-web = "7"
 
 # Async streaming for SSE
 async-stream = "0.3"
@@ -94,10 +104,16 @@ aes-gcm = "0.10"
 # JWT authentication
 jsonwebtoken = "9.3"
 
-# Password hashing (Argon2id - OWASP recommended)
-argon2 = "0.5"
-once_cell = "1.21.3"
+# Password hashing
+sha2 = "0.10"
+md5 = "0.7"
+hmac = "0.12"
+pbkdf2 = "0.12"
+digest = "0.10"
+rand = "0.8"
 regex = "1.12.2"
+flate2 = "1.1.8"
+semver = "1.0.27"
 
 # Windows DPAPI for cookie decryption
 [target.'cfg(windows)'.dependencies]
@@ -125,9 +141,3 @@ lto = true
 codegen-units = 1
 strip = true
 # Optimize for size
-
-
-
-
-
-

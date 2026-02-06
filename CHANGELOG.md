@@ -5,25 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - 2026-01-13
+## [1.3.2] - 2026-02-04
 
-### Changed
+### Added
 
-- **BREAKING**: JWT secret (`CSM_JWT_SECRET`) is now required for API authentication
-- **Security**: Upgraded password hashing from SHA-256 to Argon2id (OWASP recommended)
-- Users with existing password hashes will need to reset their passwords
+- **Real-time Session Recording API** - Prevent data loss from editor crashes
+- **Multi-Provider Recording Support** - VS Code extension records from 10+ providers
+  - `POST /api/recording/events` - Send recording events (SessionStart, MessageAdd, MessageAppend, Heartbeat)
+  - `POST /api/recording/snapshot` - Store full session snapshot for recovery
+  - `GET /api/recording/sessions` - List active recording sessions
+  - `GET /api/recording/sessions/:id` - Get recorded session by ID
+  - `GET /api/recording/recovery` - Recover sessions after crash
+  - `GET /api/recording/status` - Recording service status
+  - Event buffering with concurrent session tracking via `RecordingState`
 
-### Security
+## [1.1.0] - 2026-02-04
 
-- Fixed weak password hashing (NIST FIPS compliance)
-- Removed insecure development JWT secret fallback
-- Added `verify_password` function using Argon2id
-- PHC-format hashes now include embedded salts
+### Added
 
-### Dependencies
+- **Multi-Provider Support for Forensic Tools** - Extend session forensics across all providers
+  - Supported providers: VS Code (Copilot), Cursor, ClaudeCode, OpenCode, OpenClaw, Antigravity
+  - `chasm list sessions --provider <name>` - Filter sessions by provider
+  - `chasm list sessions --all-providers` - List sessions from all providers
+  - `chasm list agents --provider <name>` - Filter agent sessions by provider
+  - `chasm list agents -p all` - List agent sessions from all providers  
+  - `chasm show timeline --provider <name>` - Show timeline for specific provider
+  - `chasm show timeline --all-providers` - Aggregate timeline across all providers
+  - `chasm find session --provider <name>` - Search within specific provider
+  - `chasm find session --all-providers` - Search across all providers
+  - Provider column added to output tables when multiple providers are shown
+  - Provider aliases: `vscode`/`copilot`, `cursor`, `claudecode`/`claude`, `opencode`, `openclaw`/`claw`, `antigravity`/`ag`
 
-- Added `argon2` 0.5 for password hashing
-- Removed `sha2` 0.10 (no longer needed)
+- **JSONL Format Support** - Handle VS Code 1.109.0+ event-sourced session format
+  - Automatic detection and parsing of `.jsonl` session files
+  - Reconstruction of session state from event stream
+  - Backward compatible with legacy JSON format
+
+- **Agent Mode Session Tools**
+  - `chasm list agents [--size]` - List Copilot Edits / chatEditingSessions
+  - `chasm show agent <id>` - Show agent session details
+  
+- **Timeline Visualization**
+  - `chasm show timeline [--agents]` - Visualize session activity with gap detection
+  - Shows recent activity bars and identifies periods of inactivity
+  - Helps identify missing or lost sessions
+
+- **Session Search Enhancements**
+  - `chasm find session --date YYYY-MM-DD` - Filter by internal message timestamp
+  - `chasm find session --all` - Search across all workspaces
+  - `chasm list sessions --size` - Show file size column
+
+## [1.0.1] - 2026-01-17
+
+### Added
+
+- **Orphaned Session Detection** - Find and recover sessions from orphaned workspace hashes
+  - `chasm detect orphaned [PATH]` - Scan for all workspace hashes matching a project path
+  - Shows active vs orphaned workspaces with session counts and details
+  - `--recover` flag automatically copies orphaned sessions to the active workspace
+  - Helps recover valuable chat history when VS Code creates new workspace hashes
 
 ## [0.2.1] - 2025-01-10
 

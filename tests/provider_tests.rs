@@ -8,10 +8,10 @@
 //! - Individual provider implementations
 //! - Discovery mechanisms
 
-use chasm_cli::models::{ChatMessage, ChatRequest, ChatSession};
-use chasm_cli::providers::config::{CsmConfig, ProviderConfig, ProviderType};
-use chasm_cli::providers::session_format::{GenericMessage, GenericSession};
-use chasm_cli::providers::ProviderRegistry;
+use chasm::models::{ChatMessage, ChatRequest, ChatSession};
+use chasm::providers::config::{CsmConfig, ProviderConfig, ProviderType};
+use chasm::providers::session_format::{GenericMessage, GenericSession};
+use chasm::providers::ProviderRegistry;
 
 // ============================================================================
 // Provider Type Tests
@@ -683,8 +683,8 @@ mod session_format_tests {
 
 mod openai_compat_tests {
     use super::*;
-    use chasm_cli::providers::openai_compat::{OpenAIChatMessage, OpenAICompatProvider};
-    use chasm_cli::providers::ChatProvider;
+    use chasm::providers::openai_compat::{OpenAIChatMessage, OpenAICompatProvider};
+    use chasm::providers::ChatProvider;
 
     #[test]
     fn test_openai_chat_message_creation() {
@@ -865,8 +865,8 @@ mod openai_compat_tests {
 
 mod ollama_provider_tests {
     use super::*;
-    use chasm_cli::providers::ollama::OllamaProvider;
-    use chasm_cli::providers::ChatProvider;
+    use chasm::providers::ollama::OllamaProvider;
+    use chasm::providers::ChatProvider;
 
     #[test]
     fn test_ollama_provider_discover() {
@@ -922,8 +922,8 @@ mod ollama_provider_tests {
 
 mod cursor_provider_tests {
     use super::*;
-    use chasm_cli::providers::cursor::CursorProvider;
-    use chasm_cli::providers::ChatProvider;
+    use chasm::providers::cursor::CursorProvider;
+    use chasm::providers::ChatProvider;
 
     #[test]
     fn test_cursor_provider_discover() {

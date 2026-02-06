@@ -10,16 +10,16 @@
 //!
 //! Run with: cargo run --example cloud_providers
 
-use chasm_cli::providers::cloud::anthropic::parse_claude_export;
-use chasm_cli::providers::cloud::chatgpt::parse_chatgpt_export;
+use chasm::providers::cloud::anthropic::parse_claude_export;
+use chasm::providers::cloud::chatgpt::parse_chatgpt_export;
 #[allow(unused_imports)]
-use chasm_cli::providers::cloud::deepseek::parse_deepseek_export;
+use chasm::providers::cloud::deepseek::parse_deepseek_export;
 #[allow(unused_imports)]
-use chasm_cli::providers::cloud::gemini::parse_gemini_export;
-use chasm_cli::providers::cloud::m365copilot::{get_friendly_app_name, parse_m365_copilot_export};
+use chasm::providers::cloud::gemini::parse_gemini_export;
+use chasm::providers::cloud::m365copilot::{get_friendly_app_name, parse_m365_copilot_export};
 #[allow(unused_imports)]
-use chasm_cli::providers::cloud::perplexity::parse_perplexity_export;
-use chasm_cli::providers::{
+use chasm::providers::cloud::perplexity::parse_perplexity_export;
+use chasm::providers::{
     CloudConversation, CloudMessage, FetchOptions, GenericMessage, GenericSession, ProviderType,
 };
 use chrono::{TimeZone, Utc};
@@ -378,7 +378,7 @@ fn main() -> anyhow::Result<()> {
     println!("     Messages: {}", generic_session.messages.len());
 
     // Convert to ChatSession (VS Code format)
-    let chat_session: chasm_cli::models::ChatSession = generic_session.into();
+    let chat_session: chasm::models::ChatSession = generic_session.into();
 
     println!("   Step 2: Converted to ChatSession");
     println!("     Session ID: {:?}", chat_session.session_id);

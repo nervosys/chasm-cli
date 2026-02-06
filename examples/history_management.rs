@@ -2,7 +2,7 @@
 //!
 //! Run with: cargo run --example history_management
 
-use chasm_cli::workspace::{
+use chasm::workspace::{
     discover_workspaces, find_all_workspaces_for_project, get_chat_sessions_from_workspace,
 };
 use std::collections::HashMap;

@@ -66,7 +66,7 @@ fn create_test_session(
 // =============================================================================
 
 mod model_tests {
-    use chasm_cli::models::{ChatMessage, ChatRequest, ChatSession};
+    use chasm::models::{ChatMessage, ChatRequest, ChatSession};
 
     #[test]
     fn test_chat_session_full_deserialization() {
@@ -241,7 +241,7 @@ mod model_tests {
 // =============================================================================
 
 mod cli_tests {
-    use chasm_cli::cli::{Cli, Commands};
+    use chasm::cli::{Cli, Commands};
     use clap::Parser;
 
     #[test]
@@ -431,7 +431,7 @@ mod cli_tests {
 
 mod workspace_tests {
     use super::*;
-    use chasm_cli::workspace::normalize_path;
+    use chasm::workspace::normalize_path;
 
     #[test]
     fn test_normalize_path_basic() {
@@ -532,7 +532,7 @@ mod session_tests {
 // =============================================================================
 
 mod error_tests {
-    use chasm_cli::error::CsmError;
+    use chasm::error::CsmError;
 
     #[test]
     fn test_error_display_workspace_not_found() {

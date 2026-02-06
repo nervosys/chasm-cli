@@ -312,7 +312,7 @@ pub enum RemoteEvent {
         timestamp: DateTime<Utc>,
     },
 
-    /// Task was created/queued
+    /// Task was created/queued (boxed to reduce enum size)
     TaskCreated(Box<RemoteTask>),
     /// Task started running
     TaskStarted {

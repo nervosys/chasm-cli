@@ -6,14 +6,11 @@
 //! for the CSM ecosystem (csm-rust, csm-web, csm-app).
 
 use actix_web::{dev::Payload, web, FromRequest, HttpMessage, HttpRequest, HttpResponse};
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-    Argon2,
-};
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use rusqlite::OptionalExtension;
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::future::{ready, Ready};
 use uuid::Uuid;
 
@@ -22,27 +19,7 @@ use uuid::Uuid;
 // =============================================================================
 
 /// JWT secret key - in production, this should come from environment variables
-use once_cell::sync::Lazy;
-
-/// JWT secret key - MUST be set via CSM_JWT_SECRET environment variable
-/// Minimum 32 characters recommended for security
-static JWT_SECRET: Lazy<Vec<u8>> = Lazy::new(|| {
-    std::env::var("CSM_JWT_SECRET")
-        .map(|s| {
-            if s.len() < 32 {
-                eprintln!("[WARN] CSM_JWT_SECRET should be at least 32 characters for security");
-            }
-            s.into_bytes()
-        })
-        .unwrap_or_else(|_| {
-            eprintln!(
-                "[ERROR] CSM_JWT_SECRET environment variable is required for authentication."
-            );
-            eprintln!("        Generate one with: openssl rand -base64 32");
-            // Return empty vec - will cause auth to fail gracefully
-            Vec::new()
-        })
-});
+const JWT_SECRET: &[u8] = b"csm_jwt_secret_key_change_in_production_2024";
 const JWT_EXPIRY_HOURS: i64 = 24;
 const REFRESH_TOKEN_EXPIRY_DAYS: i64 = 30;
 
@@ -168,7 +145,7 @@ pub struct User {
     pub email: String,
     pub display_name: String,
     #[serde(skip_serializing)]
-    #[allow(dead_code)] // Used during password verification in login flow
+    #[allow(dead_code)]
     pub password_hash: String,
     pub subscription_tier: SubscriptionTier,
     pub subscription_expires_at: Option<i64>,
@@ -233,56 +210,12 @@ pub struct Claims {
 // Auth State (for middleware)
 // =============================================================================
 
-/// Authenticated user information extracted from JWT token.
-/// Part of the public API for handlers that need user context.
 #[derive(Debug, Clone)]
-#[allow(dead_code)] // Fields are part of public API for handler use
+#[allow(dead_code)]
 pub struct AuthenticatedUser {
     pub user_id: String,
-    /// User's email address (for logging/audit purposes)
     pub email: String,
-    /// User's subscription tier (for feature gating)
     pub tier: SubscriptionTier,
-}
-
-/// Helper function to check if user has required subscription tier.
-/// Returns Ok(()) if user has sufficient access, or an HttpResponse error.
-#[allow(dead_code)] // Part of public API for tier-gated handlers
-pub fn require_tier(
-    user: &AuthenticatedUser,
-    required_tier: SubscriptionTier,
-) -> Result<(), HttpResponse> {
-    // Empty user_id means not authenticated
-    if user.user_id.is_empty() {
-        return Err(HttpResponse::Unauthorized().json(serde_json::json!({
-            "success": false,
-            "error": "Authentication required"
-        })));
-    }
-
-    // Check tier level (Free < Pro < Enterprise)
-    let user_level = match user.tier {
-        SubscriptionTier::Free => 0,
-        SubscriptionTier::Pro => 1,
-        SubscriptionTier::Enterprise => 2,
-    };
-    let required_level = match required_tier {
-        SubscriptionTier::Free => 0,
-        SubscriptionTier::Pro => 1,
-        SubscriptionTier::Enterprise => 2,
-    };
-
-    if user_level < required_level {
-        return Err(HttpResponse::Forbidden().json(serde_json::json!({
-            "success": false,
-            "error": format!("This feature requires {} subscription or higher", required_tier.as_str()),
-            "required_tier": required_tier.as_str(),
-            "current_tier": user.tier.as_str(),
-            "user_email": user.email
-        })));
-    }
-
-    Ok(())
 }
 
 impl FromRequest for AuthenticatedUser {
@@ -360,7 +293,7 @@ pub struct ChangePasswordRequest {
 pub struct UpgradeSubscriptionRequest {
     pub tier: String,
     /// Payment token from payment provider (Stripe, etc.)
-    #[allow(dead_code)] // Will be used when payment integration is implemented
+    #[allow(dead_code)]
     pub payment_token: Option<String>,
 }
 
@@ -368,36 +301,12 @@ pub struct UpgradeSubscriptionRequest {
 // Helper Functions
 // =============================================================================
 
-/// Hash a password using Argon2id (OWASP recommended)
-/// The salt parameter is ignored - Argon2 generates its own secure salt
-/// Returns the PHC-formatted hash string which includes the salt
-pub fn hash_password(password: &str, _salt: &str) -> String {
-    let salt = SaltString::generate(&mut OsRng);
-    let argon2 = Argon2::default();
-    argon2
-        .hash_password(password.as_bytes(), &salt)
-        .map(|h| h.to_string())
-        .unwrap_or_else(|_| String::new())
-}
-
-/// Verify a password against an Argon2id hash
-/// Returns true if the password matches, false otherwise
-pub fn verify_password(password: &str, hash: &str) -> bool {
-    // Handle legacy SHA-256 hashes (64 hex characters without $)
-    if !hash.starts_with('$') && hash.len() == 64 {
-        // This is a legacy SHA-256 hash - cannot verify securely
-        // Users with legacy hashes should reset their passwords
-        return false;
-    }
-
-    let parsed_hash = match PasswordHash::new(hash) {
-        Ok(h) => h,
-        Err(_) => return false,
-    };
-
-    Argon2::default()
-        .verify_password(password.as_bytes(), &parsed_hash)
-        .is_ok()
+/// Hash a password using SHA-256 with salt
+pub fn hash_password(password: &str, salt: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(password.as_bytes());
+    hasher.update(salt.as_bytes());
+    format!("{:x}", hasher.finalize())
 }
 
 /// Generate a JWT access token
@@ -417,7 +326,7 @@ pub fn generate_access_token(user: &User) -> Option<String> {
     encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(&JWT_SECRET),
+        &EncodingKey::from_secret(JWT_SECRET),
     )
     .ok()
 }
@@ -439,7 +348,7 @@ pub fn generate_refresh_token(user: &User) -> Option<String> {
     encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(&JWT_SECRET),
+        &EncodingKey::from_secret(JWT_SECRET),
     )
     .ok()
 }
@@ -449,7 +358,7 @@ pub fn validate_token(token: &str) -> Option<AuthenticatedUser> {
     let validation = Validation::new(Algorithm::HS256);
 
     let token_data =
-        decode::<Claims>(token, &DecodingKey::from_secret(&JWT_SECRET), &validation).ok()?;
+        decode::<Claims>(token, &DecodingKey::from_secret(JWT_SECRET), &validation).ok()?;
 
     let claims = token_data.claims;
 
@@ -470,7 +379,7 @@ pub fn validate_refresh_token(token: &str) -> Option<AuthenticatedUser> {
     let validation = Validation::new(Algorithm::HS256);
 
     let token_data =
-        decode::<Claims>(token, &DecodingKey::from_secret(&JWT_SECRET), &validation).ok()?;
+        decode::<Claims>(token, &DecodingKey::from_secret(JWT_SECRET), &validation).ok()?;
 
     let claims = token_data.claims;
 
@@ -755,12 +664,12 @@ pub async fn login(
         email,
         display_name,
         stored_hash,
-        _salt, // Salt is embedded in Argon2 hash, kept for legacy compatibility
+        salt,
         tier_str,
         sub_expires,
         created_at,
         updated_at,
-        _last_login, // Previous login time (not needed for current login response)
+        _last_login,
         verified,
         avatar,
     ) = match user_result {
@@ -773,8 +682,9 @@ pub async fn login(
         }
     };
 
-    // Verify password using Argon2id
-    if !verify_password(&body.password, &stored_hash) {
+    // Verify password
+    let provided_hash = hash_password(&body.password, &salt);
+    if provided_hash != stored_hash {
         return HttpResponse::Unauthorized().json(serde_json::json!({
             "success": false,
             "error": "Invalid email or password"
@@ -1113,7 +1023,7 @@ pub async fn change_password(
         |row| Ok((row.get(0)?, row.get(1)?)),
     );
 
-    let (stored_hash, _salt) = match creds {
+    let (stored_hash, salt) = match creds {
         Ok(c) => c,
         Err(_) => {
             return HttpResponse::NotFound().json(serde_json::json!({
@@ -1123,8 +1033,9 @@ pub async fn change_password(
         }
     };
 
-    // Verify current password using Argon2id
-    if !verify_password(&body.current_password, &stored_hash) {
+    // Verify current password
+    let current_hash = hash_password(&body.current_password, &salt);
+    if current_hash != stored_hash {
         return HttpResponse::Unauthorized().json(serde_json::json!({
             "success": false,
             "error": "Current password is incorrect"

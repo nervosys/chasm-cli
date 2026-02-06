@@ -387,7 +387,7 @@ mod index_tests {
 // ============================================================================
 
 mod stats_tests {
-    use chasm_cli::commands::HarvestStats;
+    use chasm::commands::HarvestStats;
 
     #[test]
     fn test_harvest_stats_default() {

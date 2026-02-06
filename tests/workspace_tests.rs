@@ -15,7 +15,7 @@ use tempfile::TempDir;
 // ============================================================================
 
 mod decode_workspace_folder_tests {
-    use chasm_cli::workspace::decode_workspace_folder;
+    use chasm::workspace::decode_workspace_folder;
 
     #[test]
     fn test_decode_simple_unix_path() {
@@ -110,7 +110,7 @@ mod decode_workspace_folder_tests {
 // ============================================================================
 
 mod normalize_path_tests {
-    use chasm_cli::workspace::normalize_path;
+    use chasm::workspace::normalize_path;
 
     #[test]
     fn test_normalize_basic_path() {
@@ -180,7 +180,7 @@ mod normalize_path_tests {
 // ============================================================================
 
 mod workspace_storage_path_tests {
-    use chasm_cli::workspace::get_workspace_storage_path;
+    use chasm::workspace::get_workspace_storage_path;
 
     #[test]
     fn test_get_workspace_storage_path() {
@@ -212,7 +212,7 @@ mod workspace_storage_path_tests {
 // ============================================================================
 
 mod workspace_discovery_tests {
-    use chasm_cli::workspace::discover_workspaces;
+    use chasm::workspace::discover_workspaces;
 
     #[test]
     fn test_discover_workspaces_returns_vec() {
@@ -244,7 +244,7 @@ mod workspace_discovery_tests {
 // ============================================================================
 
 mod get_workspace_by_hash_tests {
-    use chasm_cli::workspace::get_workspace_by_hash;
+    use chasm::workspace::get_workspace_by_hash;
 
     #[test]
     fn test_get_workspace_nonexistent_hash() {
@@ -274,7 +274,7 @@ mod get_workspace_by_hash_tests {
 // ============================================================================
 
 mod get_workspace_by_path_tests {
-    use chasm_cli::workspace::get_workspace_by_path;
+    use chasm::workspace::get_workspace_by_path;
 
     #[test]
     fn test_get_workspace_nonexistent_path() {
@@ -315,7 +315,7 @@ mod get_workspace_by_path_tests {
 // ============================================================================
 
 mod find_workspace_by_path_tests {
-    use chasm_cli::workspace::find_workspace_by_path;
+    use chasm::workspace::find_workspace_by_path;
 
     #[test]
     fn test_find_workspace_nonexistent() {
@@ -341,7 +341,7 @@ mod find_workspace_by_path_tests {
 // ============================================================================
 
 mod find_all_workspaces_for_project_tests {
-    use chasm_cli::workspace::find_all_workspaces_for_project;
+    use chasm::workspace::find_all_workspaces_for_project;
 
     #[test]
     fn test_find_all_workspaces_by_name() {
@@ -374,7 +374,7 @@ mod find_all_workspaces_for_project_tests {
 
 mod get_chat_sessions_from_workspace_tests {
     use super::*;
-    use chasm_cli::workspace::get_chat_sessions_from_workspace;
+    use chasm::workspace::get_chat_sessions_from_workspace;
 
     #[test]
     fn test_get_sessions_nonexistent_workspace() {
@@ -511,7 +511,7 @@ mod workspace_integration_tests {
         let ws_json_path = temp_dir.path().join("abc123").join("workspace.json");
         let content = fs::read_to_string(&ws_json_path).unwrap();
 
-        let parsed: chasm_cli::models::WorkspaceJson = serde_json::from_str(&content).unwrap();
+        let parsed: chasm::models::WorkspaceJson = serde_json::from_str(&content).unwrap();
         assert!(parsed.folder.is_some());
         assert!(parsed.folder.unwrap().contains("project"));
     }
@@ -565,7 +565,7 @@ mod workspace_integration_tests {
 
 mod workspace_edge_cases {
     use super::*;
-    use chasm_cli::workspace::decode_workspace_folder;
+    use chasm::workspace::decode_workspace_folder;
 
     #[test]
     fn test_decode_percent_sign_literal() {
@@ -627,7 +627,7 @@ mod workspace_edge_cases {
         fs::write(ws_dir.join("workspace.json"), "{}").unwrap();
 
         let content = fs::read_to_string(ws_dir.join("workspace.json")).unwrap();
-        let parsed: Result<chasm_cli::models::WorkspaceJson, _> = serde_json::from_str(&content);
+        let parsed: Result<chasm::models::WorkspaceJson, _> = serde_json::from_str(&content);
         assert!(parsed.is_ok());
         assert!(parsed.unwrap().folder.is_none());
     }
@@ -640,7 +640,7 @@ mod workspace_edge_cases {
         fs::write(ws_dir.join("workspace.json"), r#"{"folder": null}"#).unwrap();
 
         let content = fs::read_to_string(ws_dir.join("workspace.json")).unwrap();
-        let parsed: chasm_cli::models::WorkspaceJson = serde_json::from_str(&content).unwrap();
+        let parsed: chasm::models::WorkspaceJson = serde_json::from_str(&content).unwrap();
         assert!(parsed.folder.is_none());
     }
 }
@@ -650,7 +650,7 @@ mod workspace_edge_cases {
 // ============================================================================
 
 mod cross_platform_tests {
-    use chasm_cli::workspace::{decode_workspace_folder, normalize_path};
+    use chasm::workspace::{decode_workspace_folder, normalize_path};
 
     #[test]
     fn test_decode_mixed_slashes() {
@@ -686,7 +686,7 @@ mod cross_platform_tests {
 // ============================================================================
 
 mod global_storage_path_tests {
-    use chasm_cli::workspace::{get_empty_window_sessions_path, get_global_storage_path};
+    use chasm::workspace::{get_empty_window_sessions_path, get_global_storage_path};
 
     #[test]
     fn test_get_global_storage_path_returns_valid_path() {

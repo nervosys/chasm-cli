@@ -6,7 +6,7 @@
 //! - Error conversions and From implementations
 //! - Result type usage
 
-use chasm_cli::error::CsmError;
+use chasm::error::CsmError;
 
 // ============================================================================
 // CsmError Variant Tests
@@ -220,7 +220,7 @@ mod error_message_tests {
 
 mod result_type_tests {
     use super::*;
-    use chasm_cli::error::Result;
+    use chasm::error::Result;
 
     fn make_ok() -> Result<i32> {
         Ok(42)
