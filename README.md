@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <strong>Universal Chat & Agentic AI System Manager</strong><br>
-  <em>Harvest, merge, and recover your AI chat and agent task histories</em>
+  <strong>Chat Session Manager (Chasm): Bridging the divide between AI providers</strong><br>
+  <em>Harvest, harmonize, and recover your AI chat and agent task histories</em>
 </p>
 
 <p align="center">
@@ -204,6 +204,18 @@ chasm export path /backup/dir /path/to/your/project
 | `chasm merge sessions <id1> <id2> ...` | Merge specific sessions by ID             |
 | `chasm merge all`                      | Merge all sessions across all providers   |
 
+### Sync & Recovery
+
+| Command                                   | Description                                              |
+| ----------------------------------------- | -------------------------------------------------------- |
+| `chasm sync --pull`                       | Pull sessions from provider workspaces into database     |
+| `chasm sync --push`                       | Push sessions from database back to provider workspaces  |
+| `chasm sync --pull --push`                | Bidirectional sync                                       |
+| `chasm sync --pull --workspace <pattern>` | Sync only matching workspaces                            |
+| `chasm recover extract <path>`            | Extract hidden sessions from VS Code recording state     |
+| `chasm recover upgrade <path>`            | Upgrade session files from JSON to JSONL (VS Code 1.109+)|
+| `chasm export batch <dest> <paths...>`    | Batch export sessions from multiple projects             |
+
 ### Harvesting (Bulk Collection)
 
 | Command                                 | Description                                       |
@@ -213,6 +225,8 @@ chasm export path /backup/dir /path/to/your/project
 | `chasm harvest run --providers copilot` | Harvest only from specific providers              |
 | `chasm harvest status`                  | Show harvest database status                      |
 | `chasm harvest search <query>`          | Full-text search across all harvested sessions    |
+| `chasm harvest sync --push`             | Alias for `chasm sync --push`                     |
+| `chasm harvest sync --pull`             | Alias for `chasm sync --pull`                     |
 
 ### Git Integration
 
