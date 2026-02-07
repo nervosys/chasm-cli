@@ -206,15 +206,15 @@ chasm export path /backup/dir /path/to/your/project
 
 ### Sync & Recovery
 
-| Command                                   | Description                                              |
-| ----------------------------------------- | -------------------------------------------------------- |
-| `chasm sync --pull`                       | Pull sessions from provider workspaces into database     |
-| `chasm sync --push`                       | Push sessions from database back to provider workspaces  |
-| `chasm sync --pull --push`                | Bidirectional sync                                       |
-| `chasm sync --pull --workspace <pattern>` | Sync only matching workspaces                            |
-| `chasm recover extract <path>`            | Extract hidden sessions from VS Code recording state     |
-| `chasm recover upgrade <path>`            | Upgrade session files from JSON to JSONL (VS Code 1.109+)|
-| `chasm export batch <dest> <paths...>`    | Batch export sessions from multiple projects             |
+| Command                                   | Description                                               |
+| ----------------------------------------- | --------------------------------------------------------- |
+| `chasm sync --pull`                       | Pull sessions from provider workspaces into database      |
+| `chasm sync --push`                       | Push sessions from database back to provider workspaces   |
+| `chasm sync --pull --push`                | Bidirectional sync                                        |
+| `chasm sync --pull --workspace <pattern>` | Sync only matching workspaces                             |
+| `chasm recover extract <path>`            | Extract hidden sessions from VS Code recording state      |
+| `chasm recover upgrade <path>`            | Upgrade session files from JSON to JSONL (VS Code 1.109+) |
+| `chasm export batch <dest> <paths...>`    | Batch export sessions from multiple projects              |
 
 ### Harvesting (Bulk Collection)
 
@@ -558,11 +558,9 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ---
 
 <p align="center">
-  <sub>Built with 🦀 Rust by <a href="https://nervosys.ai">Nervosys</a></sub>
+  <sub>Built with Rust 🦀 by <a href="https://nervosys.ai">NERVOSYS</a></sub>
 </p>
 
 <p align="center">
   <a href="https://github.com/nervosys/chasm-cli/stargazers">⭐ Star us on GitHub</a>
 </p>
-
-
