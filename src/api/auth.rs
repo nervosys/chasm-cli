@@ -18,8 +18,14 @@ use uuid::Uuid;
 // Configuration
 // =============================================================================
 
-/// JWT secret key - in production, this should come from environment variables
-const JWT_SECRET: &[u8] = b"csm_jwt_secret_key_change_in_production_2024";
+/// JWT secret key - MUST be set via the `JWT_SECRET` environment variable.
+/// Panics at startup if not configured.
+fn jwt_secret() -> Vec<u8> {
+    std::env::var("JWT_SECRET")
+        .expect("JWT_SECRET environment variable must be set")
+        .into_bytes()
+}
+
 const JWT_EXPIRY_HOURS: i64 = 24;
 const REFRESH_TOKEN_EXPIRY_DAYS: i64 = 30;
 
@@ -323,10 +329,11 @@ pub fn generate_access_token(user: &User) -> Option<String> {
         token_type: "access".to_string(),
     };
 
+    let secret = jwt_secret();
     encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(JWT_SECRET),
+        &EncodingKey::from_secret(&secret),
     )
     .ok()
 }
@@ -345,10 +352,11 @@ pub fn generate_refresh_token(user: &User) -> Option<String> {
         token_type: "refresh".to_string(),
     };
 
+    let secret = jwt_secret();
     encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(JWT_SECRET),
+        &EncodingKey::from_secret(&secret),
     )
     .ok()
 }
@@ -357,8 +365,9 @@ pub fn generate_refresh_token(user: &User) -> Option<String> {
 pub fn validate_token(token: &str) -> Option<AuthenticatedUser> {
     let validation = Validation::new(Algorithm::HS256);
 
+    let secret = jwt_secret();
     let token_data =
-        decode::<Claims>(token, &DecodingKey::from_secret(JWT_SECRET), &validation).ok()?;
+        decode::<Claims>(token, &DecodingKey::from_secret(&secret), &validation).ok()?;
 
     let claims = token_data.claims;
 
@@ -378,8 +387,9 @@ pub fn validate_token(token: &str) -> Option<AuthenticatedUser> {
 pub fn validate_refresh_token(token: &str) -> Option<AuthenticatedUser> {
     let validation = Validation::new(Algorithm::HS256);
 
+    let secret = jwt_secret();
     let token_data =
-        decode::<Claims>(token, &DecodingKey::from_secret(JWT_SECRET), &validation).ok()?;
+        decode::<Claims>(token, &DecodingKey::from_secret(&secret), &validation).ok()?;
 
     let claims = token_data.claims;
 
