@@ -17,10 +17,11 @@
 
 <p align="center">
   <a href="#-recover-lost-chat-sessions">Recover Sessions</a> •
+  <a href="#-harvest--search-all-history">Harvest & Export</a> •
   <a href="#-chat-with-any-ai-provider">Run & Record</a> •
-  <a href="#-harvest--search-all-history">Harvest</a> •
   <a href="#-no-vendor-lock-in">Cross-Provider</a> •
   <a href="#-agentic-coding">Agency</a> •
+  <a href="#-merge--consolidate-long-histories">Merge</a> •
   <a href="#-installation">Install</a>
 </p>
 
@@ -38,15 +39,15 @@
 
 ## ✨ Features
 
+- 🔄 **Recover** - Restore lost or orphaned chat sessions to VS Code
 - 🔍 **Harvest** - Extract chat sessions from VS Code, Cursor, Windsurf, and other editors
 - 🚀 **Run & Record** - Chat with Ollama, Claude, ChatGPT, Claude Code, or OpenCode — every message auto-saved
-- 🔄 **Recover** - Restore lost or orphaned chat sessions to VS Code
-- 🔀 **Merge** - Combine sessions across workspaces and time periods
+- 🔀 **No Lock-in** - Universal session format that works across all providers
 - 🤖 **Agentic Coding** - Run coding tasks with any LLM backend (like Claude Code, but provider-agnostic)
+- 🔗 **Merge** - Combine sessions across workspaces and time periods
 - 📡 **Real-time Recording** - Live session recording to prevent data loss from editor crashes
 - 🔌 **API Server** - REST + WebSocket API for building custom integrations
 - 🗃️ **Universal Database** - SQLite-based storage that normalizes all providers
-- 🤖 **MCP Tools** - Model Context Protocol support for AI agent integration
 
 ---
 
@@ -102,43 +103,6 @@ chasm detect all /path/to/your/project --verbose
 
 ---
 
-## 🚀 Chat with Any AI Provider
-
-Launch any AI provider directly from the terminal — every message is automatically recorded to Chasm's database. No data loss, no manual exports, full history retention.
-
-```bash
-# Chat with a local Ollama model
-chasm run ollama
-chasm run ollama -m codellama
-chasm run ollama -m mistral --endpoint http://remote-server:11434
-
-# Chat with Claude (Anthropic API)
-chasm run claude
-chasm run claude -m claude-3-haiku
-
-# Chat with ChatGPT (OpenAI API)
-chasm run chatgpt
-chasm run chatgpt -m gpt-4o-mini
-
-# Launch Claude Code CLI with recording
-chasm run claudecode --workspace /path/to/project
-
-# Launch OpenCode CLI with recording
-chasm run opencode --workspace /path/to/project
-
-# Interactive TUI browser
-chasm run tui
-```
-
-All sessions are automatically persisted to the database. Search them later:
-
-```bash
-chasm harvest search "the bug we fixed yesterday"
-chasm list sessions
-```
-
----
-
 ## 📊 Harvest & Search All History
 
 Bulk-collect sessions from every provider on your machine into a single searchable database:
@@ -190,6 +154,43 @@ chasm export batch /backup/dir /project1 /project2 /project3
 chasm sync --pull     # provider → database
 chasm sync --push     # database → provider
 chasm sync --pull --push  # bidirectional
+```
+
+---
+
+## 🚀 Chat with Any AI Provider
+
+Launch any AI provider directly from the terminal — every message is automatically recorded to Chasm's database. No data loss, no manual exports, full history retention.
+
+```bash
+# Chat with a local Ollama model
+chasm run ollama
+chasm run ollama -m codellama
+chasm run ollama -m mistral --endpoint http://remote-server:11434
+
+# Chat with Claude (Anthropic API)
+chasm run claude
+chasm run claude -m claude-3-haiku
+
+# Chat with ChatGPT (OpenAI API)
+chasm run chatgpt
+chasm run chatgpt -m gpt-4o-mini
+
+# Launch Claude Code CLI with recording
+chasm run claudecode --workspace /path/to/project
+
+# Launch OpenCode CLI with recording
+chasm run opencode --workspace /path/to/project
+
+# Interactive TUI browser
+chasm run tui
+```
+
+All sessions are automatically persisted to the database. Search them later:
+
+```bash
+chasm harvest search "the bug we fixed yesterday"
+chasm list sessions
 ```
 
 ---
@@ -317,6 +318,31 @@ chasm agency run --orchestration parallel "Analyze and fix all TODO comments"
 - **tester** - Generates and runs tests
 - **researcher** - Gathers information
 - **executor** - Runs commands and tasks
+
+---
+
+## 🔗 Merge & Consolidate Long Histories
+
+Over time, AI conversations scatter across workspaces, branches, and providers. Chasm's merge commands consolidate them into a coherent timeline:
+
+```bash
+# Merge all sessions for a project into a single session
+chasm merge path /path/to/your/project
+
+# Merge sessions from matching workspaces
+chasm merge workspace "my-project*"
+
+# Merge specific sessions by ID
+chasm merge sessions <id1> <id2> <id3>
+
+# Merge everything across all providers
+chasm merge all
+```
+
+This is especially useful for:
+- **Long-running projects** with dozens of scattered sessions
+- **Team handoffs** where multiple developers chatted about the same codebase
+- **Context consolidation** before starting a new coding task with full history
 
 ---
 
