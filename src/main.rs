@@ -27,8 +27,8 @@ use clap::Parser;
 use cli::{
     AgencyCommands, ApiCommands, Cli, Commands, DetectCommands, ExportCommands, FetchCommands,
     FindCommands, GitCommands, HarvestCommands, HarvestGitCommands, ImportCommands, ListCommands,
-    MergeCommands, MigrationCommands, MoveCommands, ProviderCommands,
-    RunCommands, ShowCommands, TelemetryCommands,
+    MergeCommands, MigrationCommands, MoveCommands, ProviderCommands, RunCommands, ShowCommands,
+    TelemetryCommands,
 };
 
 /// Get the current directory name as a default pattern
@@ -48,10 +48,22 @@ fn main() -> Result<()> {
         // ====================================================================
         Commands::List { command } => match command {
             Some(ListCommands::Workspaces) => commands::list_workspaces(),
-            Some(ListCommands::Sessions { project_path, size, provider, all_providers }) => {
-                commands::list_sessions(project_path.as_deref(), size, provider.as_deref(), all_providers)
-            }
-            Some(ListCommands::Agents { project_path, size, provider }) => {
+            Some(ListCommands::Sessions {
+                project_path,
+                size,
+                provider,
+                all_providers,
+            }) => commands::list_sessions(
+                project_path.as_deref(),
+                size,
+                provider.as_deref(),
+                all_providers,
+            ),
+            Some(ListCommands::Agents {
+                project_path,
+                size,
+                provider,
+            }) => {
                 commands::list_agents_sessions(project_path.as_deref(), size, provider.as_deref())
             }
             Some(ListCommands::Path { project_path }) => {
@@ -112,7 +124,7 @@ fn main() -> Result<()> {
                     None,
                     None,
                     false,
-                    None, // provider
+                    None,  // provider
                     false, // all_providers
                     50,
                 )
@@ -140,9 +152,17 @@ fn main() -> Result<()> {
             Some(ShowCommands::Path { project_path }) => {
                 commands::history_show(project_path.as_deref())
             }
-            Some(ShowCommands::Timeline { project_path, agents, provider, all_providers }) => {
-                commands::show_timeline(project_path.as_deref(), agents, provider.as_deref(), all_providers)
-            }
+            Some(ShowCommands::Timeline {
+                project_path,
+                agents,
+                provider,
+                all_providers,
+            }) => commands::show_timeline(
+                project_path.as_deref(),
+                agents,
+                provider.as_deref(),
+                all_providers,
+            ),
             None => commands::history_show(None), // Default to current directory
         },
 
@@ -424,10 +444,27 @@ fn main() -> Result<()> {
         },
 
         // ====================================================================
-        // Run Commands (TUI)
+        // Run Commands (TUI + Providers)
         // ====================================================================
         Commands::Run { command } => match command {
             RunCommands::Tui => tui::run_tui(),
+            RunCommands::Ollama {
+                model,
+                endpoint,
+                workspace,
+            } => commands::run::run_ollama(&model, endpoint.as_deref(), workspace.as_deref()),
+            RunCommands::ClaudeCode { workspace } => {
+                commands::run::run_claude_code(workspace.as_deref())
+            }
+            RunCommands::OpenCode { workspace } => {
+                commands::run::run_opencode(workspace.as_deref())
+            }
+            RunCommands::Claude { model, workspace } => {
+                commands::run::run_claude(&model, workspace.as_deref())
+            }
+            RunCommands::ChatGpt { model, workspace } => {
+                commands::run::run_chatgpt(&model, workspace.as_deref())
+            }
         },
 
         // ====================================================================
@@ -603,7 +640,12 @@ fn main() -> Result<()> {
                 session,
                 output,
                 format,
-            } => commands::recover_from_database(&backup, session.as_deref(), output.as_deref(), &format),
+            } => commands::recover_from_database(
+                &backup,
+                session.as_deref(),
+                output.as_deref(),
+                &format,
+            ),
             cli::RecoverCommands::Jsonl {
                 file,
                 output,

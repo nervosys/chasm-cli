@@ -930,6 +930,60 @@ pub enum MigrationCommands {
 pub enum RunCommands {
     /// Launch interactive TUI (Text User Interface)
     Tui,
+
+    /// Run Ollama with automatic session recording
+    Ollama {
+        /// Model name (e.g., llama3, codellama, mistral)
+        #[arg(short, long, default_value = "llama3")]
+        model: String,
+
+        /// Custom API endpoint
+        #[arg(long)]
+        endpoint: Option<String>,
+
+        /// Workspace path for session context
+        #[arg(long)]
+        workspace: Option<String>,
+    },
+
+    /// Run Claude Code CLI with automatic session recording
+    #[command(name = "claudecode")]
+    ClaudeCode {
+        /// Workspace path for session context
+        #[arg(long)]
+        workspace: Option<String>,
+    },
+
+    /// Run OpenCode with automatic session recording
+    #[command(name = "opencode")]
+    OpenCode {
+        /// Workspace path for session context
+        #[arg(long)]
+        workspace: Option<String>,
+    },
+
+    /// Run Claude (Anthropic API) with automatic session recording
+    Claude {
+        /// Model name (e.g., claude-sonnet-4-20250514, claude-3-haiku)
+        #[arg(short, long, default_value = "claude-sonnet-4-20250514")]
+        model: String,
+
+        /// Workspace path for session context
+        #[arg(long)]
+        workspace: Option<String>,
+    },
+
+    /// Run ChatGPT (OpenAI API) with automatic session recording
+    #[command(name = "chatgpt")]
+    ChatGpt {
+        /// Model name (e.g., gpt-4o, gpt-4o-mini, o1)
+        #[arg(short, long, default_value = "gpt-4o")]
+        model: String,
+
+        /// Workspace path for session context
+        #[arg(long)]
+        workspace: Option<String>,
+    },
 }
 
 // ============================================================================

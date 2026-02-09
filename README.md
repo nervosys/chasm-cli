@@ -43,6 +43,7 @@
 - 📊 **Analyze** - Get statistics on your AI assistant usage
 - 🔌 **API Server** - REST API for building custom integrations
 - 📡 **Real-time Recording** - Live session recording to prevent data loss from editor crashes
+- 🚀 **Run & Record** - Launch Ollama, Claude, ChatGPT, Claude Code, or OpenCode with automatic session recording
 - 🤖 **MCP Tools** - Model Context Protocol support for AI agent integration
 - 🗃️ **Universal Database** - SQLite-based storage that normalizes all providers
 
@@ -253,9 +254,19 @@ chasm export path /backup/dir /path/to/your/project
 
 ### Interactive Tools
 
-| Command        | Description                                |
-| -------------- | ------------------------------------------ |
-| `chasm run tui` | Launch interactive TUI browser            |
+| Command                              | Description                                  |
+| ------------------------------------ | -------------------------------------------- |
+| `chasm run tui`                      | Launch interactive TUI browser               |
+| `chasm run ollama`                   | Chat with Ollama (auto-records session)      |
+| `chasm run ollama -m codellama`      | Chat with a specific Ollama model            |
+| `chasm run claudecode`               | Launch Claude Code CLI with recording        |
+| `chasm run opencode`                 | Launch OpenCode CLI with recording           |
+| `chasm run claude`                   | Chat with Claude API (auto-records session)  |
+| `chasm run claude -m claude-3-haiku` | Chat with a specific Claude model            |
+| `chasm run chatgpt`                  | Chat with ChatGPT API (auto-records session) |
+| `chasm run chatgpt -m gpt-4o-mini`   | Chat with a specific ChatGPT model           |
+
+All `chasm run` provider commands automatically record every message to Chasm's database. Sessions can be listed with `chasm list sessions` and searched with `chasm harvest search`.
 
 ### Server & API
 
@@ -459,22 +470,22 @@ chasm api serve --host 0.0.0.0 --port 8787
 
 ### Endpoints
 
-| Method | Endpoint                          | Description                            |
-| ------ | --------------------------------- | -------------------------------------- |
-| GET    | `/api/health`                     | Health check                           |
-| GET    | `/api/workspaces`                 | List workspaces                        |
-| GET    | `/api/workspaces/:id`             | Get workspace details                  |
-| GET    | `/api/sessions`                   | List sessions                          |
-| GET    | `/api/sessions/:id`               | Get session with messages              |
-| GET    | `/api/sessions/search?q=`         | Search sessions                        |
-| GET    | `/api/stats`                      | Database statistics                    |
-| GET    | `/api/providers`                  | List supported providers               |
-| POST   | `/api/recording/events`           | Send real-time recording events        |
-| POST   | `/api/recording/snapshot`         | Store full session snapshot            |
-| GET    | `/api/recording/sessions`         | List active recording sessions         |
-| GET    | `/api/recording/sessions/:id`     | Get recorded session by ID             |
-| GET    | `/api/recording/status`           | Recording service status               |
-| WS     | `/api/recording/ws`               | WebSocket for live session recording   |
+| Method | Endpoint                      | Description                          |
+| ------ | ----------------------------- | ------------------------------------ |
+| GET    | `/api/health`                 | Health check                         |
+| GET    | `/api/workspaces`             | List workspaces                      |
+| GET    | `/api/workspaces/:id`         | Get workspace details                |
+| GET    | `/api/sessions`               | List sessions                        |
+| GET    | `/api/sessions/:id`           | Get session with messages            |
+| GET    | `/api/sessions/search?q=`     | Search sessions                      |
+| GET    | `/api/stats`                  | Database statistics                  |
+| GET    | `/api/providers`              | List supported providers             |
+| POST   | `/api/recording/events`       | Send real-time recording events      |
+| POST   | `/api/recording/snapshot`     | Store full session snapshot          |
+| GET    | `/api/recording/sessions`     | List active recording sessions       |
+| GET    | `/api/recording/sessions/:id` | Get recorded session by ID           |
+| GET    | `/api/recording/status`       | Recording service status             |
+| WS     | `/api/recording/ws`           | WebSocket for live session recording |
 
 ### Real-time Recording
 
@@ -487,14 +498,14 @@ Chasm's recording API prevents data loss from editor crashes by capturing sessio
 
 **Supported events:**
 
-| Event            | Description                                     |
-| ---------------- | ----------------------------------------------- |
-| `session_start`  | Begin recording a new session                   |
-| `session_end`    | End a recording session                         |
-| `message_add`    | Add a new message (user, assistant, or system)  |
-| `message_update` | Update message content (streaming responses)    |
-| `message_append` | Append to message content (incremental chunks)  |
-| `heartbeat`      | Keep session alive during idle periods          |
+| Event            | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `session_start`  | Begin recording a new session                  |
+| `session_end`    | End a recording session                        |
+| `message_add`    | Add a new message (user, assistant, or system) |
+| `message_update` | Update message content (streaming responses)   |
+| `message_append` | Append to message content (incremental chunks) |
+| `heartbeat`      | Keep session alive during idle periods         |
 
 ```bash
 # Start the API server with recording enabled

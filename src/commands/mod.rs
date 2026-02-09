@@ -12,6 +12,7 @@ mod migration;
 mod providers;
 mod recover;
 mod register;
+pub mod run;
 mod telemetry;
 mod workspace_cmds;
 
