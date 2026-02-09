@@ -2,12 +2,12 @@
 name = "chasm-cli"
 version = "1.3.2"
 edition = "2021"
-rust-version = "1.75"
+rust-version = "1.85"
 description = "Universal chat session manager - harvest, merge, and analyze AI chat history from VS Code, Cursor, and other editors"
 authors = ["Nervosys LLC <hello@nervosys.ai>"]
 license = "Apache-2.0"
-repository = "https://github.com/nervosys/chasm"
-homepage = "https://github.com/nervosys/chasm"
+repository = "https://github.com/nervosys/chasm-cli"
+homepage = "https://github.com/nervosys/chasm-cli"
 documentation = "https://docs.rs/chasm-cli"
 readme = "README.md"
 keywords = ["chat", "ai", "copilot", "session", "history"]

@@ -23,6 +23,7 @@ Thumbs.db
 
 # Test output
 test_output.json
+test_session.json
 
 # Environment files
 .env

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "requesterUsername": "test",
-  "responderUsername": "GitHub Copilot",
-  "initialLocation": "panel",
-  "requests": [{"time": 1234567890, "message": {"text": "hello"}}]
-}
