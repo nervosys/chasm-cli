@@ -161,23 +161,25 @@ chasm export path /backup/dir /path/to/your/project
 
 ### Session Recovery & Fetching
 
-| Command                           | Description                                                         |
-| --------------------------------- | ------------------------------------------------------------------- |
-| `chasm fetch path <project-path>` | **Recover sessions** - Fetches and registers sessions for a project |
-| `chasm fetch workspace <pattern>` | Fetch sessions from workspaces matching a pattern                   |
-| `chasm fetch session <id>`        | Fetch a specific session by ID                                      |
-| `chasm register <path>`           | Register orphaned sessions in VS Code''s database index             |
+| Command                            | Description                                                         |
+| ---------------------------------- | ------------------------------------------------------------------- |
+| `chasm fetch path <project-path>`  | **Recover sessions** - Fetches and registers sessions for a project |
+| `chasm fetch workspace <pattern>`  | Fetch sessions from workspaces matching a pattern                   |
+| `chasm fetch session <id>`         | Fetch a specific session by ID                                      |
+| `chasm register all --path <path>` | Register all on-disk sessions into VS Code's database index         |
 
 ### Listing & Discovery
 
-| Command                                     | Description                                    |
-| ------------------------------------------- | ---------------------------------------------- |
-| `chasm list workspaces`                     | List all discovered workspaces                 |
-| `chasm list sessions`                       | List all sessions                              |
-| `chasm list sessions --project-path <path>` | List sessions for a specific project           |
-| `chasm detect all <path>`                   | Auto-detect workspace, providers, and sessions |
-| `chasm detect workspace <path>`             | Detect workspace info for a path               |
-| `chasm detect providers`                    | List available LLM providers                   |
+| Command                                     | Description                                        |
+| ------------------------------------------- | -------------------------------------------------- |
+| `chasm list workspaces`                     | List all discovered workspaces                     |
+| `chasm list sessions`                       | List all sessions                                  |
+| `chasm list sessions --project-path <path>` | List sessions for a specific project               |
+| `chasm detect all <path>`                   | Auto-detect workspace, providers, and sessions     |
+| `chasm detect workspace <path>`             | Detect workspace info for a path                   |
+| `chasm detect providers`                    | List available LLM providers                       |
+| `chasm detect orphaned <path>`              | Find orphaned workspaces with recoverable sessions |
+| `chasm detect orphaned --recover <path>`    | Recover orphaned sessions to the active workspace  |
 
 ### Viewing & Searching
 
@@ -212,8 +214,12 @@ chasm export path /backup/dir /path/to/your/project
 | `chasm sync --push`                       | Push sessions from database back to provider workspaces   |
 | `chasm sync --pull --push`                | Bidirectional sync                                        |
 | `chasm sync --pull --workspace <pattern>` | Sync only matching workspaces                             |
-| `chasm recover extract <path>`            | Extract hidden sessions from VS Code recording state      |
-| `chasm recover upgrade <path>`            | Upgrade session files from JSON to JSONL (VS Code 1.109+) |
+| `chasm recover scan`                      | Scan for recoverable sessions from various sources        |
+| `chasm recover extract <path>`            | Extract sessions from a VS Code workspace by project path |
+| `chasm recover orphans`                   | List sessions that may be orphaned in workspaceStorage    |
+| `chasm recover repair`                    | Repair corrupted session files in place                   |
+| `chasm recover convert`                   | Convert session files between JSON and JSONL formats      |
+| `chasm recover status`                    | Show recovery status and recommendations                  |
 | `chasm export batch <dest> <paths...>`    | Batch export sessions from multiple projects              |
 
 ### Harvesting (Bulk Collection)
@@ -250,6 +256,14 @@ chasm export path /backup/dir /path/to/your/project
 | ----------------------------- | ------------------------- |
 | `chasm api serve`             | Start the REST API server |
 | `chasm api serve --port 8787` | Start on specific port    |
+
+### Telemetry
+
+| Command               | Description                            |
+| --------------------- | -------------------------------------- |
+| `chasm telemetry`     | Show current telemetry status          |
+| `chasm telemetry on`  | Enable anonymous usage data collection |
+| `chasm telemetry off` | Disable telemetry (opt-in by default)  |
 
 
 ## 🤖 Agency - Agentic Coding CLI
@@ -487,7 +501,7 @@ chasm api serve --host 0.0.0.0 --port 8787
 
 ### Prerequisites
 
-- Rust 1.75+
+- Rust 1.85+
 - Git
 
 ### Building
