@@ -6,6 +6,8 @@
 
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::type_complexity)]
+#![allow(dead_code)]
+#![allow(unused_imports)]
 
 mod agency;
 mod api;

@@ -23,11 +23,11 @@ This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participatin
 2. **Clone your fork** locally:
    ```bash
    git clone https://github.com/YOUR_USERNAME/chasm-cli.git
-   cd chasm
+   cd chasm-cli
    ```
 3. **Add the upstream remote**:
    ```bash
-   git remote add upstream https://github.com/nervosys/chasm.git
+   git remote add upstream https://github.com/nervosys/chasm-cli.git
    ```
 
 ## How to Contribute
@@ -63,7 +63,7 @@ Feature requests are welcome! Please:
 
 ### Prerequisites
 
-- Rust 1.75+ (install via [rustup](https://rustup.rs/))
+- Rust 1.85+ (install via [rustup](https://rustup.rs/))
 - Git
 
 ### Building
@@ -226,9 +226,9 @@ Signed-off-by: Your Name <your.email@example.com>
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/nervosys/chasm/discussions) for general questions
-- Check [existing issues](https://github.com/nervosys/chasm/issues) for known problems
-- Read the [documentation](https://docs.rs/chasm) for API details
+- Open a [GitHub Discussion](https://github.com/nervosys/chasm-cli/discussions) for general questions
+- Check [existing issues](https://github.com/nervosys/chasm-cli/issues) for known problems
+- Read the [documentation](https://docs.rs/chasm-cli) for API details
 
 Thank you for contributing to Chasm! 🎉
 

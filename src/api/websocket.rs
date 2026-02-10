@@ -10,7 +10,7 @@
 //! as it has better HTTP/2 compatibility and doesn't require connection upgrades.
 
 use actix_web::{web, Error, HttpRequest, HttpResponse};
-use futures_util::{SinkExt, StreamExt};
+use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::RwLock;

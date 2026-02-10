@@ -48,7 +48,7 @@
 //! }
 //! ```
 
-use chasm_cli::mcp::server::McpServer;
+use chasm::mcp::server::McpServer;
 
 fn main() {
     let mut server = McpServer::new();

@@ -22,7 +22,7 @@
 
 use actix_web::{web, Error, HttpRequest, HttpResponse, Responder};
 use chrono::{DateTime, Utc};
-use futures_util::{SinkExt, StreamExt};
+use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};

@@ -14,6 +14,12 @@ keywords = ["chat", "ai", "copilot", "session", "history"]
 categories = ["command-line-utilities", "development-tools", "database"]
 exclude = ["target/", "tests/fixtures/", ".github/", "*.db", "*.log"]
 
+[lib]
+name = "chasm"
+
+[features]
+enterprise = []
+
 [dependencies]
 # CLI framework
 clap = { version = "4.4", features = ["derive", "env"] }

@@ -35,7 +35,7 @@ Key dependencies include:
 - ratatui (MIT) - Terminal UI framework
 
 For the complete list of dependencies and their licenses, see:
-https://github.com/nervosys/chasm/blob/main/THIRD_PARTY_LICENSES.md
+https://github.com/nervosys/chasm-cli/blob/master/THIRD_PARTY_LICENSES.md
 
 ================================================================================
 
