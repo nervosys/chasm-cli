@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Memory and RAG (Retrieval-Augmented Generation) System
 //!
 //! Provides persistent context, knowledge retrieval, and semantic search for agents.

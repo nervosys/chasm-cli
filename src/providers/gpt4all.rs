@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! GPT4All provider for local LLM inference
 //!
 //! GPT4All is a free-to-use, locally running, privacy-aware chatbot.

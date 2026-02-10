@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Run provider commands with automatic session recording
 //!
 //! Launches AI provider CLIs/APIs with a recording wrapper that captures

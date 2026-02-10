@@ -11,7 +11,7 @@
   <a href="https://crates.io/crates/chasm-cli"><img src="https://img.shields.io/crates/v/chasm-cli.svg?style=flat-square&logo=rust&logoColor=white&color=orange" alt="Crates.io"></a>
   <a href="https://docs.rs/chasm-cli"><img src="https://img.shields.io/docsrs/chasm-cli?style=flat-square&logo=docs.rs&logoColor=white" alt="Documentation"></a>
   <a href="https://github.com/nervosys/chasm-cli/actions"><img src="https://img.shields.io/github/actions/workflow/status/nervosys/chasm-cli/ci.yml?style=flat-square&logo=github&logoColor=white&label=CI" alt="CI Status"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg?style=flat-square" alt="License"></a>
   <a href="https://github.com/nervosys/chasm-cli/releases"><img src="https://img.shields.io/github/v/release/nervosys/chasm-cli?style=flat-square&logo=github&logoColor=white&label=release" alt="Release"></a>
 </p>
 
@@ -609,11 +609,14 @@ cargo test
 
 ## 📜 License
 
-Licensed under the Apache License, Version 2.0 ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0).
+This project is dual-licensed:
+
+- **Open Source**: [GNU Affero General Public License v3.0](LICENSE) — free for open-source use. If you modify Chasm and deploy it on a network, you must make the source available.
+- **Commercial**: A proprietary license is available for companies that need to use Chasm without AGPL obligations. See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) for details or contact **licensing@nervosys.ai**.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+Contributions are welcome! By contributing, you agree that your contributions may be used under both licenses. Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## 🔒 Security
 

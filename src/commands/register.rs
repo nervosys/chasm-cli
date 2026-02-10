@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Register commands - Add sessions to VS Code's session index
 //!
 //! VS Code only displays sessions that are registered in the `chat.ChatSessionStore.index`

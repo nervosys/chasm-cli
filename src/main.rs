@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Chat System Manager (csm) - Main entry point
 //!
 //! A CLI tool to manage and merge chat sessions across workspaces.

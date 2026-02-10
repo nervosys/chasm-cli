@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Universal Chat Session Database
 //!
 //! A unified database schema for storing, versioning, and tracking chat sessions

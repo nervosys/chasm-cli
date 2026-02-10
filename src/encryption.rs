@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Encryption at Rest for Session Data
 //!
 //! This module provides AES-256-GCM encryption for sensitive session data,

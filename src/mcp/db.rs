@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! MCP Database Access - Connect to the CSM database for csm-web integration
 //!
 //! This module provides read-only access to the CSM database, enabling the MCP server

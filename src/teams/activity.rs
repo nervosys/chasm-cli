@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2027 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Team activity feed module
 //!
 //! Tracks and provides team activities, notifications, and audit trail.

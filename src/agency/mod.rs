@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Agent Development Kit (Agency) - Rust Implementation
 //!
 //! A Rust-native framework for building, orchestrating, and deploying AI agents.

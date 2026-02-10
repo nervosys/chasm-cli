@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! vLLM provider for high-performance inference
 //!
 //! vLLM is a high-throughput and memory-efficient inference engine

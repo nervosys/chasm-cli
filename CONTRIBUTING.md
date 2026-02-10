@@ -206,7 +206,9 @@ See existing providers for reference implementations.
 
 ## License
 
-By contributing to Chasm, you agree that your contributions will be licensed under the Apache License 2.0.
+Chasm is dual-licensed under the **AGPL v3** (open source) and a **commercial license**.
+
+By contributing to Chasm, you agree that your contributions will be licensed under the AGPL v3 and that Nervosys LLC may also offer your contributions under the commercial license. This is standard practice for dual-licensed projects and is necessary to maintain the dual-licensing model.
 
 ### Developer Certificate of Origin
 

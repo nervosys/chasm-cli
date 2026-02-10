@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! MCP Tools - Expose csm functionality as MCP tools
 
 #![allow(dead_code, unused_imports)]

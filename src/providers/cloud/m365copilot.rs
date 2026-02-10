@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2026 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Microsoft 365 Copilot cloud provider
 //!
 //! Fetches conversation history from Microsoft 365 Copilot using the Microsoft Graph API.

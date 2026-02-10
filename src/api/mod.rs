@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2028 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! HTTP API Server for Chat System Manager
 //!
 //! Provides a REST API for the web frontend and mobile app to interact with CSM.

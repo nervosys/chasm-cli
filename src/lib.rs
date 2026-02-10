@@ -1,5 +1,5 @@
 // Copyright (c) 2024-2028 Nervosys LLC
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 //! Chat System Manager (CSM) - Library
 //!
 //! A library for managing and merging chat sessions across workspaces and LLM providers.
