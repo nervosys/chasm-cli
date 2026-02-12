@@ -28,7 +28,9 @@
 <br>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nervosys/chasm-cli/master/assets/demo.svg" alt="Chasm Demo" width="850">
+  <video src="https://github.com/nervosys/chasm-cli/raw/master/assets/getting-started.mp4" width="850" autoplay loop muted playsinline>
+    Your browser does not support the video tag. <a href="assets/getting-started.mp4">Watch the demo</a>.
+  </video>
 </p>
 
 <br>
